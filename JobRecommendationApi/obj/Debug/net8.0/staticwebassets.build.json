@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "CBgDi8jx8xaHPuboDcAXpcs1oze2xuHy07MRLKxcP+g=",
+  "Source": "JobRecommendationApi",
+  "BasePath": "_content/JobRecommendationApi",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

@@ -1,0 +1,35 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace JobRecommendationApi.Models
+{
+    public class JobPost
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(100)]
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+
+        [Required]
+        public string CompanyName { get; set; } = string.Empty;
+
+        [Required]
+        public string RequiredSkills { get; set; } = string.Empty;
+
+        public decimal OfferedSalary { get; set; }
+
+        [MaxLength(100)]
+        public string Location { get; set; } = string.Empty;
+        public int EmployerId { get; set; }
+
+        public int? CategoryId { get; set; }
+
+        // ปิดรับสมัคร/ซ่อนประกาศได้โดยไม่ต้องลบข้อมูลจริง (soft delete) — คงประวัติใบสมัครที่ผูกอยู่ไว้
+        public bool IsActive { get; set; } = true;
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? UpdatedAt { get; set; }
+    }
+}

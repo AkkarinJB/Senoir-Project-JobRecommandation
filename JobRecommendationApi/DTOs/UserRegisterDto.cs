@@ -1,0 +1,24 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace JobRecommendationApi.DTOs
+{
+    public class UserRegisterDto
+    {
+        [Required]
+        [MaxLength(50)]
+        public string Username { get; set; } = string.Empty;
+
+        [Required]
+        [EmailAddress]
+        [MaxLength(100)]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        [MinLength(8, ErrorMessage = "รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร")]
+        public string Password { get; set; } = string.Empty;
+
+        // อนุญาตเฉพาะ "JobSeeker" หรือ "Employer" เท่านั้น ตรวจสอบเพิ่มเติมใน AuthController
+        // บัญชี Admin ต้องสร้างโดยผู้ดูแลระบบเท่านั้น ไม่เปิดให้สมัครเองผ่าน endpoint นี้
+        public string Role { get; set; } = "JobSeeker";
+    }
+}

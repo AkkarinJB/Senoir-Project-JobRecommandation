@@ -1,0 +1,73 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace JobRecommendationApi.Services
+{
+    public class MatchingService : IMatchingService
+    {
+        public double CalculateCosineSimilarity(string jobSkills, string candidateSkills)
+        {
+            if (string.IsNullOrWhiteSpace(jobSkills) || string.IsNullOrWhiteSpace(candidateSkills))
+            {
+                return 0.0;
+            }
+
+            char[] delimiters = { ',', ' ' };
+            var listA = jobSkills.Split(delimiters, StringSplitOptions.RemoveEmptyEntries)
+                                 .Select(s => s.ToLowerInvariant().Trim()).ToList();
+            
+            var listB = candidateSkills.Split(delimiters, StringSplitOptions.RemoveEmptyEntries)
+                                       .Select(s => s.ToLowerInvariant().Trim()).ToList();
+
+            var allUniqueSkills = listA.Union(listB).Distinct().ToList();
+
+            var vectorA = allUniqueSkills.Select(skill => listA.Contains(skill) ? 1.0 : 0.0).ToList();
+            var vectorB = allUniqueSkills.Select(skill => listB.Contains(skill) ? 1.0 : 0.0).ToList();
+
+            double dotProduct = 0.0;
+            for (int i = 0; i < allUniqueSkills.Count; i++)
+            {
+                dotProduct += vectorA[i] * vectorB[i];
+            }
+
+            double magnitudeA = Math.Sqrt(vectorA.Sum(x => x * x));
+            double magnitudeB = Math.Sqrt(vectorB.Sum(x => x * x));
+
+            if (magnitudeA == 0 || magnitudeB == 0)
+            {
+                return 0.0;
+            }
+
+            double similarity = dotProduct / (magnitudeA * magnitudeB);
+            return Math.Round(similarity * 100, 2);
+        }
+
+        // คะแนนพื้นที่ปฏิบัติงาน (ตามข้อเสนอโครงการข้อ 6.2) — เวอร์ชันนี้ใช้การเทียบข้อความเป็นตัวแทนระยะทางจริง
+        // เนื่องจากระบบยังไม่มีข้อมูล lat/long สำหรับคำนวณระยะทางแบบ Haversine
+        // TODO: อัปเกรดเป็นการคำนวณระยะทางจริงเมื่อมีการเก็บพิกัด lat/long ของผู้สมัครและประกาศงาน
+        public double CalculateLocationScore(string? candidateLocation, string? jobLocation)
+        {
+            if (string.IsNullOrWhiteSpace(candidateLocation))
+            {
+                // ผู้สมัครไม่ได้ระบุพื้นที่ที่ต้องการ ถือว่าเปิดกว้างทุกพื้นที่ ให้คะแนนกลาง ๆ แทนการหักคะแนนเต็ม
+                return 50.0;
+            }
+
+            if (string.IsNullOrWhiteSpace(jobLocation))
+            {
+                return 0.0;
+            }
+
+            var candidate = candidateLocation.Trim().ToLowerInvariant();
+            var job = jobLocation.Trim().ToLowerInvariant();
+
+            if (candidate == job) return 100.0;
+
+            // ตรงกันบางส่วน เช่น ผู้สมัครระบุ "อุดรธานี" ตรงกับประกาศ "อ.เมือง อุดรธานี"
+            if (job.Contains(candidate) || candidate.Contains(job)) return 70.0;
+
+            return 0.0;
+        }
+    }
+}

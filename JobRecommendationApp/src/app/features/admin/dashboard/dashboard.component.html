@@ -1,1 +1,16 @@
-<p>dashboard works!</p>
+<h1 class="page-title">Dashboard ผู้ดูแลระบบ</h1>
+
+<div class="grid grid-cols-3 gap-4 max-w-2xl">
+  <div class="card">
+    <p class="text-sm text-muted">ผู้ใช้งานทั้งหมด</p>
+    <p class="text-3xl font-bold text-gray-900">{{ totalUsers() }}</p>
+  </div>
+  <div class="card">
+    <p class="text-sm text-muted">ประกาศงานทั้งหมด</p>
+    <p class="text-3xl font-bold text-gray-900">{{ totalJobs() }}</p>
+  </div>
+  <div class="card">
+    <p class="text-sm text-muted">รอยืนยันตัวตน</p>
+    <p class="text-3xl font-bold text-gray-900">{{ pendingEmployers() }}</p>
+  </div>
+</div>

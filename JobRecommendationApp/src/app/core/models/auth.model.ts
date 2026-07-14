@@ -1,4 +1,3 @@
-// บทบาทต้องตรงกับ enum ฝั่ง backend (User.Role ใน JobRecommendationApi) ตัวสะกดต้องเหมือนกันเป๊ะ
 export type UserRole = 'JobSeeker' | 'Employer' | 'Admin';
 
 export interface RegisterPayload {
@@ -24,7 +23,6 @@ export interface RefreshResponse {
   refreshToken: string;
 }
 
-// ข้อมูลที่ถอดได้จาก JWT payload (ดู claims ที่ TokenService ฝั่ง backend ใส่ไว้)
 export interface CurrentUser {
   username: string;
   email: string;

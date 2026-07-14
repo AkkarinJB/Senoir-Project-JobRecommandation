@@ -33,7 +33,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
       </form>
 
       <p class="text-sm text-muted mt-4 text-center">
-        ยังไม่มีบัญชี? <a routerLink="/register" class="text-blue-600 hover:underline">สมัครสมาชิก</a>
+        ยังไม่มีบัญชี? <a routerLink="/register" class="text-brand-600 hover:underline">สมัครสมาชิก</a>
       </p>
     </div>
   `
@@ -57,7 +57,6 @@ export class LoginComponent {
     this.authService.login({ username: this.username, password: this.password }).subscribe({
       next: (res) => {
         this.isSubmitting.set(false);
-        // ถ้ามี returnUrl (roleGuard ส่งมาให้ตอนเด้งมาหน้า login) กลับไปหน้านั้น ไม่งั้นไปหน้าแรกตาม role
         const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
         this.router.navigateByUrl(returnUrl ?? this.authService.homePathForRole(res.role));
       },

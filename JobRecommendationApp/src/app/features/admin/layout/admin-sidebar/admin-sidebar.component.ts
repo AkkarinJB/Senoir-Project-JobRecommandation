@@ -7,11 +7,11 @@ import { AuthService } from '../../../../core/auth/auth.service';
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
   template: `
-    <aside class="flex flex-col w-64 h-screen bg-gray-900 text-gray-300 transition-all duration-300">
+    <aside class="flex flex-col w-64 h-screen bg-brand-950 text-brand-100 transition-all duration-300">
 
       <!-- Admin Header -->
-      <div class="flex items-center justify-center h-16 bg-gray-950 border-b border-gray-800">
-        <span class="text-white font-bold text-lg uppercase tracking-wider">Admin Panel</span>
+      <div class="flex items-center justify-center h-16 bg-brand-950 border-b border-brand-800">
+        <span class="text-white font-bold text-lg uppercase tracking-wider">Udonthani.link</span>
       </div>
 
       <!-- Navigation Menu -->
@@ -47,7 +47,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
 
       </nav>
 
-      <div class="p-4 border-t border-gray-800">
+      <div class="p-4 border-t border-brand-800">
         <button (click)="logout()" class="flex items-center w-full px-4 py-2 text-sm text-red-400 rounded-lg hover:bg-red-500/10 hover:text-red-300 transition-colors">
           <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
           ออกจากระบบ

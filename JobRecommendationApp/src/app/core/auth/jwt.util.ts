@@ -1,7 +1,5 @@
 import { CurrentUser, UserRole } from '../models/auth.model';
 
-// ถอด JWT payload แบบไม่พึ่ง library ภายนอก (หลีกเลี่ยงการเพิ่ม dependency ใหม่)
-// หมายเหตุ: นี่แค่ decode ไม่ได้ verify signature — การ verify เกิดที่ backend อยู่แล้วทุกครั้งที่เรียก API
 function decodeJwtPayload(token: string): Record<string, unknown> | null {
   try {
     const base64Url = token.split('.')[1];
@@ -22,8 +20,6 @@ function decodeJwtPayload(token: string): Record<string, unknown> | null {
   }
 }
 
-// .NET JwtSecurityTokenHandler แปลงชื่อ claim มาตรฐาน (ClaimTypes.Name/.Email/.Role) เป็นชื่อสั้นแบบไม่คงที่ตาม version
-// จึงเช็คหลาย key ที่เป็นไปได้แทนการเดาชื่อเดียว ให้ทนทานต่อการเปลี่ยนแปลงฝั่ง backend
 function readClaim(payload: Record<string, unknown>, keys: string[]): string | undefined {
   for (const key of keys) {
     const value = payload[key];
@@ -59,7 +55,5 @@ export function isTokenExpired(token: string): boolean {
   const payload = decodeJwtPayload(token);
   const exp = payload?.['exp'];
   if (typeof exp !== 'number') return true;
-
-  // exp ใน JWT เป็นวินาที (Unix time) ส่วน Date.now() เป็นมิลลิวินาที
   return Date.now() >= exp * 1000;
 }

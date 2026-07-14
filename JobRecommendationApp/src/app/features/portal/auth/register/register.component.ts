@@ -14,7 +14,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
 
       <form (ngSubmit)="submit()" class="space-y-4">
         <div>
-          <label class="form-label">สมัครในฐานะ</label>
+          <label class="form-label">กรุณาเลือกประเภทการสมัคร</label>
           <div class="grid grid-cols-2 gap-3">
             <button type="button" (click)="role = 'JobSeeker'"
                     [class.btn-outline-active]="role === 'JobSeeker'"
@@ -57,7 +57,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
       </form>
 
       <p class="text-sm text-muted mt-4 text-center">
-        มีบัญชีอยู่แล้ว? <a routerLink="/login" class="text-blue-600 hover:underline">เข้าสู่ระบบ</a>
+        มีบัญชีอยู่แล้ว? <a routerLink="/login" class="text-brand-600 hover:underline">เข้าสู่ระบบ</a>
       </p>
     </div>
   `

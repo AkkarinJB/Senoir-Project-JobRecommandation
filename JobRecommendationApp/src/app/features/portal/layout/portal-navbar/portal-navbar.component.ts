@@ -13,41 +13,41 @@ import { AuthService } from '../../../../core/auth/auth.service';
 
           <!-- Logo & Main Links -->
           <div class="flex items-center gap-8">
-            <a routerLink="/" class="text-2xl font-bold text-blue-600">JobPortal</a>
+            <a routerLink="/" class="text-2xl font-bold text-brand-600">Udonthani.Link</a>
 
             <div class="hidden md:flex space-x-4">
               <a routerLink="/"
                  [routerLinkActiveOptions]="{ exact: true }"
-                 routerLinkActive="text-blue-600 font-medium"
-                 class="text-gray-600 hover:text-blue-600 transition-colors px-3 py-2">
+                 routerLinkActive="text-brand-600 font-medium"
+                 class="text-gray-600 hover:text-brand-600 transition-colors px-3 py-2">
                 หน้าแรก
               </a>
               <a routerLink="/jobs"
-                 routerLinkActive="text-blue-600 font-medium"
-                 class="text-gray-600 hover:text-blue-600 transition-colors px-3 py-2">
+                 routerLinkActive="text-brand-600 font-medium"
+                 class="text-gray-600 hover:text-brand-600 transition-colors px-3 py-2">
                 ค้นหางาน
               </a>
               @if (authService.role() === 'JobSeeker') {
                 <a routerLink="/my-applications"
-                   routerLinkActive="text-blue-600 font-medium"
-                   class="text-gray-600 hover:text-blue-600 transition-colors px-3 py-2">
+                   routerLinkActive="text-brand-600 font-medium"
+                   class="text-gray-600 hover:text-brand-600 transition-colors px-3 py-2">
                   ใบสมัครของฉัน
                 </a>
                 <a routerLink="/my-profile"
-                   routerLinkActive="text-blue-600 font-medium"
-                   class="text-gray-600 hover:text-blue-600 transition-colors px-3 py-2">
+                   routerLinkActive="text-brand-600 font-medium"
+                   class="text-gray-600 hover:text-brand-600 transition-colors px-3 py-2">
                   โปรไฟล์ของฉัน
                 </a>
               }
               @if (authService.role() === 'Employer') {
                 <a routerLink="/employer"
-                   class="text-gray-600 hover:text-blue-600 transition-colors px-3 py-2">
+                   class="text-gray-600 hover:text-brand-600 transition-colors px-3 py-2">
                   หน้าจัดการของฉัน
                 </a>
               }
               @if (authService.role() === 'Admin') {
                 <a routerLink="/admin"
-                   class="text-gray-600 hover:text-blue-600 transition-colors px-3 py-2">
+                   class="text-gray-600 hover:text-brand-600 transition-colors px-3 py-2">
                   หน้าผู้ดูแลระบบ
                 </a>
               }

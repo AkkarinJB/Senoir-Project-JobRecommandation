@@ -1,10 +1,24 @@
 @import "tailwindcss";
 
+@theme {
+  --color-brand-50: #FDF4EC;
+  --color-brand-100: #FAE6D3;
+  --color-brand-200: #F3C89D;
+  --color-brand-300: #EBA76A;
+  --color-brand-400: #E0863F;
+  --color-brand-500: #D06B2C;
+  --color-brand-600: #C1502E;
+  --color-brand-700: #A03D24;
+  --color-brand-800: #7A2F1E;
+  --color-brand-900: #5C2417;
+  --color-brand-950: #3D170F;
+}
+
 @layer components {
   .btn-primary {
     @apply inline-flex items-center justify-center font-medium rounded-lg px-4 py-2 transition-colors
            disabled:opacity-60 disabled:cursor-not-allowed
-           bg-blue-600 text-white hover:bg-blue-700;
+           bg-brand-600 text-white hover:bg-brand-700;
   }
   .btn-outline {
     @apply inline-flex items-center justify-center font-medium rounded-lg px-4 py-2 transition-colors
@@ -12,7 +26,7 @@
            border border-gray-300 text-gray-700 hover:bg-gray-50;
   }
   .btn-outline-active {
-    @apply border-blue-600 text-blue-600;
+    @apply border-brand-600 text-brand-600;
   }
   .btn-ghost-danger {
     @apply inline-flex items-center justify-center font-medium rounded-lg px-4 py-2 transition-colors
@@ -28,7 +42,7 @@
   }
   .form-input {
     @apply w-full border border-gray-300 rounded-lg px-3 py-2
-           focus:outline-none focus:ring-2 focus:ring-blue-500;
+           focus:outline-none focus:ring-2 focus:ring-brand-500;
   }
   .form-error {
     @apply text-sm text-red-600;
@@ -48,10 +62,13 @@
   }
 
   .sidebar-link {
-    @apply flex items-center px-4 py-3 rounded-lg text-gray-300
-           hover:bg-gray-800 hover:text-white transition-colors;
+    @apply flex items-center px-4 py-3 rounded-lg text-brand-100
+           hover:bg-brand-800 hover:text-white transition-colors;
   }
   .sidebar-link-active {
-    @apply bg-gray-800 text-white;
+    @apply bg-brand-800 text-white;
   }
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

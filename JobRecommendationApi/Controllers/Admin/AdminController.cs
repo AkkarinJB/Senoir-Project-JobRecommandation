@@ -75,6 +75,14 @@ namespace JobRecommendationApi.Controllers.Admin
             return Ok(new { message = "ปฏิเสธการยืนยันตัวตนแล้ว" });
         }
 
+        // รายการประกาศงานทั้งหมดสำหรับ Admin ตรวจสอบ/ลบ (รวมที่ปิดรับสมัครแล้วด้วย ต่างจาก GET /api/Job ที่โชว์เฉพาะ IsActive)
+        [HttpGet("jobs")]
+        public IActionResult GetAllJobsForModeration()
+        {
+            var jobs = _context.JobPosts.OrderByDescending(j => j.CreatedAt).ToList();
+            return Ok(jobs);
+        }
+
         // ลบประกาศงานโดยผู้ดูแลระบบ (moderation) — เผื่อกรณีประกาศไม่เหมาะสม/สแปม
         [HttpDelete("jobs/{id}")]
         public IActionResult RemoveJobPost(int id)

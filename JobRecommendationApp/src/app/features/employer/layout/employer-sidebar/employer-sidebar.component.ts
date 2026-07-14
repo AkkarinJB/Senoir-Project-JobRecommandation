@@ -7,8 +7,8 @@ import { AuthService } from '../../../../core/auth/auth.service';
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
   template: `
-    <aside class="flex flex-col w-64 h-screen bg-gray-900 text-gray-300">
-      <div class="flex items-center justify-center h-16 bg-gray-950 border-b border-gray-800">
+    <aside class="flex flex-col w-64 h-screen bg-brand-950 text-brand-100">
+      <div class="flex items-center justify-center h-16 bg-brand-950 border-b border-brand-800">
         <span class="text-white font-bold text-lg uppercase tracking-wider">Employer Panel</span>
       </div>
 
@@ -27,7 +27,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
         </a>
       </nav>
 
-      <div class="p-4 border-t border-gray-800">
+      <div class="p-4 border-t border-brand-800">
         <button (click)="logout()" class="w-full text-left px-4 py-2 text-sm text-red-400 rounded-lg hover:bg-red-500/10 hover:text-red-300 transition-colors">
           ออกจากระบบ
         </button>

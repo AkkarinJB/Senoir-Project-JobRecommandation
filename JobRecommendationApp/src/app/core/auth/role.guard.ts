@@ -3,8 +3,6 @@ import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from './auth.service';
 import { UserRole } from '../models/auth.model';
 
-// ใช้แบบ roleGuard(['Admin']) หรือ roleGuard(['Employer', 'Admin']) เป็นต้น
-// ยังไม่ login -> เด้งไป /login พร้อม returnUrl, login แล้วแต่ role ไม่ตรง -> เด้งกลับหน้าแรกของ role ตัวเอง
 export function roleGuard(allowedRoles: UserRole[]): CanActivateFn {
   return (route, state) => {
     const authService = inject(AuthService);

@@ -14,9 +14,6 @@ const REFRESH_TOKEN_KEY = 'jr_refresh_token';
 export class AuthService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}/Auth`;
-
-  // อ่าน token ที่ค้างอยู่ใน localStorage ตอนเปิดแอปใหม่ (refresh หน้าเว็บแล้ว session ไม่หาย)
-  // ถ้า access token หมดอายุแล้วก็ยังตั้ง currentUser จาก token เดิมไปก่อน — interceptor จะ refresh ให้อัตโนมัติตอนเรียก API ครั้งแรก
   private currentUserSignal = signal<CurrentUser | null>(this.restoreUserFromStorage());
 
   currentUser = this.currentUserSignal.asReadonly();
@@ -45,9 +42,6 @@ export class AuthService {
   }
 
   private refreshInFlight$: Observable<RefreshResponse | null> | null = null;
-
-  // interceptor เรียกตัวนี้ตอนเจอ 401 — คืน null ถ้า refresh ไม่สำเร็จ (แทนที่จะ throw เพื่อให้ interceptor เช็คง่าย ๆ)
-  // ถ้ามีหลาย request โดน 401 พร้อมกัน ใช้ shareReplay ให้ยิง /refresh แค่ครั้งเดียวแล้วแชร์ผลลัพธ์ ไม่ยิงซ้ำซ้อน
   refreshAccessToken(): Observable<RefreshResponse | null> {
     if (this.refreshInFlight$) return this.refreshInFlight$;
 
@@ -72,7 +66,6 @@ export class AuthService {
     this.clearSession();
 
     if (!refreshToken) return of(null);
-    // ยิง revoke ที่ backend แบบ best-effort เคลียร์ local state ไปก่อนแล้วไม่ว่าผลจะเป็นยังไง
     return this.http.post(`${this.baseUrl}/logout`, { refreshToken }).pipe(catchError(() => of(null)));
   }
 
@@ -95,14 +88,12 @@ export class AuthService {
     this.currentUserSignal.set(parseCurrentUserFromToken(accessToken));
   }
 
-  // เคลียร์ session ในเครื่อง โดยไม่ยิง request ไป backend — ใช้ตอน refresh token ใช้ไม่ได้แล้ว (กัน loop)
   clearSession(): void {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     this.currentUserSignal.set(null);
   }
 
-  // path เริ่มต้นหลัง login สำเร็จ แยกตาม role
   homePathForRole(role: UserRole | null): string {
     switch (role) {
       case 'Admin':

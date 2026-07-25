@@ -21,7 +21,6 @@ namespace JobRecommendationApi.Models
         [MaxLength(100)]
         public string? Website { get; set; }
 
-        // ผู้ดูแลระบบเป็นผู้ยืนยันตัวตนเท่านั้น ห้ามให้ client ตั้งค่านี้เอง
         public bool IsVerified { get; set; } = false;
 
         public DateTime? VerifiedAt { get; set; }

@@ -20,7 +20,6 @@ namespace JobRecommendationApi.Models
 
         public int ExperienceYears { get; set; }
 
-        // พื้นที่ที่ต้องการทำงาน ใช้เป็นปัจจัยหนึ่งใน Weighted Scoring Model (เทียบกับ JobPost.Location)
         [MaxLength(100)]
         public string? PreferredLocation { get; set; }
 

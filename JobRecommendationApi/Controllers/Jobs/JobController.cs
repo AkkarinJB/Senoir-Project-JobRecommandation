@@ -52,7 +52,6 @@ namespace JobRecommendationApi.Controllers.Jobs
         [HttpGet]
         public IActionResult GetAllJobs()
         {
-            // แสดงเฉพาะประกาศที่ยังเปิดรับสมัคร (IsActive) ต่อสาธารณะ
             var jobs = _context.JobPosts
             .Where(j => j.IsActive)
             .OrderByDescending(j => j.CreatedAt)
@@ -71,7 +70,6 @@ namespace JobRecommendationApi.Controllers.Jobs
             return Ok(job);
         }
 
-        // ประกาศงานของผู้ประกอบการที่ login อยู่ (รวมที่ปิดรับสมัครแล้ว) ใช้จัดการประกาศของตัวเอง
         [HttpGet("my-jobs")]
         [Authorize(Roles = "Employer")]
         public IActionResult GetMyJobs()

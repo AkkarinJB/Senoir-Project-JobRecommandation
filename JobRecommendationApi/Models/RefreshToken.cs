@@ -20,7 +20,6 @@ namespace JobRecommendationApi.Models
 
         public DateTime? RevokedAt { get; set; }
 
-        // เก็บ token ใหม่ที่แทนที่ตัวนี้ไว้ เผื่อใช้ตรวจจับการนำ refresh token เก่ากลับมาใช้ซ้ำ (token reuse / replay attack)
         [MaxLength(200)]
         public string? ReplacedByToken { get; set; }
 

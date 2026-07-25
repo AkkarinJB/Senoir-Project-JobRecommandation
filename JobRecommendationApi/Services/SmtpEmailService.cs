@@ -3,8 +3,6 @@ using System.Net.Mail;
 
 namespace JobRecommendationApi.Services
 {
-    // ส่งอีเมลผ่าน SMTP ตั้งค่าได้ผ่าน appsettings ("Smtp" section)
-    // ถ้ายังไม่ได้ตั้งค่า Smtp:Host จะข้ามการส่งและบันทึก log แทน เพื่อไม่ให้ flow หลัก (เช่น สมัครงาน) ล้มเหลวตามไปด้วย
     public class SmtpEmailService : IEmailService
     {
         private readonly IConfiguration _configuration;

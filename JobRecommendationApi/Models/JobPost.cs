@@ -26,7 +26,6 @@ namespace JobRecommendationApi.Models
 
         public int? CategoryId { get; set; }
 
-        // ปิดรับสมัคร/ซ่อนประกาศได้โดยไม่ต้องลบข้อมูลจริง (soft delete) — คงประวัติใบสมัครที่ผูกอยู่ไว้
         public bool IsActive { get; set; } = true;
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;

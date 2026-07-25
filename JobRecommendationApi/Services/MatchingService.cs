@@ -43,14 +43,10 @@ namespace JobRecommendationApi.Services
             return Math.Round(similarity * 100, 2);
         }
 
-        // คะแนนพื้นที่ปฏิบัติงาน (ตามข้อเสนอโครงการข้อ 6.2) — เวอร์ชันนี้ใช้การเทียบข้อความเป็นตัวแทนระยะทางจริง
-        // เนื่องจากระบบยังไม่มีข้อมูล lat/long สำหรับคำนวณระยะทางแบบ Haversine
-        // TODO: อัปเกรดเป็นการคำนวณระยะทางจริงเมื่อมีการเก็บพิกัด lat/long ของผู้สมัครและประกาศงาน
         public double CalculateLocationScore(string? candidateLocation, string? jobLocation)
         {
             if (string.IsNullOrWhiteSpace(candidateLocation))
             {
-                // ผู้สมัครไม่ได้ระบุพื้นที่ที่ต้องการ ถือว่าเปิดกว้างทุกพื้นที่ ให้คะแนนกลาง ๆ แทนการหักคะแนนเต็ม
                 return 50.0;
             }
 

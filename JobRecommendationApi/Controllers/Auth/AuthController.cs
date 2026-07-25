@@ -10,8 +10,6 @@ namespace JobRecommendationApi.Controllers.Auth
   [ApiController]
   public class AuthController : ControllerBase
     {
-        // สมัครสมาชิกได้เฉพาะ 2 บทบาทนี้ผ่าน endpoint สาธารณะ
-        // Admin ต้องถูกสร้างผ่านการ seed หรือโดย Admin คนอื่นเท่านั้น (ดู Program.cs)
         private static readonly string[] AllowedRegistrationRoles = { "JobSeeker", "Employer" };
 
         private readonly AppDbContext _context;
@@ -91,8 +89,6 @@ namespace JobRecommendationApi.Controllers.Auth
             return Ok(new { token = accessToken, refreshToken = refreshTokenValue, role = user.Role });
         }
 
-        // ขอ access token ใหม่ด้วย refresh token โดยไม่ต้อง login ใหม่
-        // ใช้วิธี rotation: refresh token เก่าจะถูก revoke ทันทีและออกอันใหม่แทนทุกครั้งที่เรียก
         [HttpPost("refresh")]
         public IActionResult Refresh(RefreshTokenRequestDto request)
         {
@@ -123,8 +119,6 @@ namespace JobRecommendationApi.Controllers.Auth
             return Ok(new { token = newAccessToken, refreshToken = newRefreshTokenValue });
         }
 
-        // เพิกถอน refresh token เพื่อออกจากระบบ (access token เดิมจะยังใช้ได้จนกว่าจะหมดอายุ
-        // เพราะเป็น JWT แบบ stateless — ตั้ง AccessTokenExpiryMinutes ให้สั้นเพื่อจำกัดความเสี่ยงส่วนนี้)
         [Microsoft.AspNetCore.Authorization.Authorize]
         [HttpPost("logout")]
         public IActionResult Logout(RefreshTokenRequestDto request)

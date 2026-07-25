@@ -33,7 +33,6 @@ namespace JobRecommendationApi.Controllers
             var allJobs = _context.JobPosts.Where(j => j.IsActive).ToList();
             var recommendations = new List<JobRecommendationResultDto>();
 
-            // น้ำหนักตาม Weighted Scoring Model (ข้อเสนอโครงการข้อ 6.2): ทักษะ, ค่าตอบแทน, พื้นที่ปฏิบัติงาน
             double weightSkills = 0.5;
             double weightSalary = 0.3;
             double weightLocation = 0.2;

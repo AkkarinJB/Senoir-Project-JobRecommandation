@@ -8,7 +8,6 @@ namespace JobRecommendationApi.DTOs
         public decimal OfferedSalary { get; set; }
         public double MatchPercentage { get; set; }
 
-        // แจกแจงคะแนนแต่ละปัจจัยไว้เพื่อความโปร่งใส (debug/แสดงผลฝั่ง frontend ได้ว่าทำไมถึงแนะนำงานนี้)
         public double SkillScore { get; set; }
         public double SalaryScore { get; set; }
         public double LocationScore { get; set; }

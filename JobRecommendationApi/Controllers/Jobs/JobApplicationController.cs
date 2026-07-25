@@ -53,7 +53,6 @@ namespace JobRecommendationApi.Controllers.Jobs
             _context.JobApplications.Add(application);
             _context.SaveChanges();
 
-            // แจ้งเตือนผู้ประกอบการเจ้าของประกาศว่ามีผู้สมัครใหม่
             var employer = _context.Users.FirstOrDefault(u => u.Id == job.EmployerId);
             if (employer != null)
             {
@@ -69,7 +68,6 @@ namespace JobRecommendationApi.Controllers.Jobs
             return Ok(new { message = "ส่งใบสมัครสำเร็จ", applicationId = application.Id });
         }
 
-        // ผู้หางานดูรายการงานที่ตัวเองสมัครไปแล้ว
         [HttpGet("my-applications")]
         [Authorize(Roles = "JobSeeker")]
         public IActionResult GetMyApplications()
@@ -101,7 +99,6 @@ namespace JobRecommendationApi.Controllers.Jobs
             return Ok(applications);
         }
 
-        // ผู้ประกอบการดูรายชื่อผู้สมัครในประกาศงานของตัวเอง (เฉพาะเจ้าของประกาศเท่านั้น)
         [HttpGet("job/{jobId}")]
         [Authorize(Roles = "Employer")]
         public IActionResult GetApplicantsForJob(int jobId)
@@ -136,7 +133,6 @@ namespace JobRecommendationApi.Controllers.Jobs
             return Ok(applicants);
         }
 
-        // ผู้ประกอบการอัปเดตสถานะใบสมัคร (Reviewed / Accepted / Rejected)
         [HttpPut("{applicationId}/status")]
         [Authorize(Roles = "Employer")]
         public async Task<IActionResult> UpdateStatus(int applicationId, JobApplicationStatusUpdateDto request)
@@ -160,7 +156,6 @@ namespace JobRecommendationApi.Controllers.Jobs
             application.UpdatedAt = DateTime.Now;
             _context.SaveChanges();
 
-            // แจ้งเตือนผู้สมัครว่าสถานะใบสมัครเปลี่ยน
             var candidateProfile = _context.CandidateProfiles.FirstOrDefault(c => c.Id == application.CandidateProfileId);
             var candidateUser = candidateProfile != null
                 ? _context.Users.FirstOrDefault(u => u.Id == candidateProfile.UserId)

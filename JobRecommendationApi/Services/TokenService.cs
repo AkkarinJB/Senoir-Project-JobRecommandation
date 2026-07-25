@@ -7,8 +7,6 @@ using JobRecommendationApi.Models;
 
 namespace JobRecommendationApi.Services
 {
-    // แยก JWT/refresh token generation ออกจาก AuthController เพื่อให้ endpoint login และ refresh
-    // ใช้ logic เดียวกัน ไม่ต้อง copy-paste
     public class TokenService : ITokenService
     {
         private readonly IConfiguration _configuration;

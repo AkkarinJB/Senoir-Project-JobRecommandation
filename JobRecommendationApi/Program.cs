@@ -19,8 +19,6 @@ builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddEndpointsApiExplorer();
 
-// CORS: Angular SPA อยู่คนละ origin กับ API จำเป็นต้องเปิดไว้ ไม่งั้น browser จะบล็อกทุก request
-// รายชื่อ origin ที่อนุญาตกำหนดผ่าน appsettings เพื่อแยกค่าระหว่าง dev/prod ได้
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>()
     ?? new[] { "http://localhost:4200" };
 builder.Services.AddCors(options =>
@@ -89,8 +87,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// สร้างบัญชี Admin เริ่มต้นถ้ายังไม่มีในระบบ (ต้องรัน migration ให้ตารางถูกสร้างก่อน)
-// ค่าเริ่มต้นอ่านจาก AdminSeed ใน appsettings — ควรเปลี่ยนรหัสผ่านทันทีหลัง deploy จริง
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();

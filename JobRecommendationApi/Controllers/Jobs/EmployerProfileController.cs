@@ -75,7 +75,6 @@ namespace JobRecommendationApi.Controllers.Jobs
             profile.Website = request.Website;
             profile.UpdatedAt = DateTime.Now;
 
-            // แก้ไขข้อมูลบริษัทแล้วต้องยืนยันตัวตนใหม่ ป้องกันสวมรอยเปลี่ยนข้อมูลหลังผ่านการ verify แล้ว
             profile.IsVerified = false;
             profile.VerifiedAt = null;
 

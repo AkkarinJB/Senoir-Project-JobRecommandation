@@ -8,10 +8,6 @@ namespace JobRecommendationApi.DTOs
         public decimal OfferedSalary { get; set; }
         public double MatchPercentage { get; set; }
 
-        public double SkillScore { get; set; }
-        public double SalaryScore { get; set; }
-        public double LocationScore { get; set; }
-
         public List<string> MatchedSkills { get; set; } = new List<string>();
     }
 }

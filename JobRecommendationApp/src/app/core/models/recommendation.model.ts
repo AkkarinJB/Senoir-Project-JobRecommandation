@@ -4,8 +4,5 @@ export interface JobRecommendation {
   location: string;
   offeredSalary: number;
   matchPercentage: number;
-  skillScore: number;
-  salaryScore: number;
-  locationScore: number;
   matchedSkills: string[];
 }

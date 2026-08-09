@@ -42,7 +42,7 @@ interface JobListItem {
         <p class="text-muted">ยังไม่มีประกาศงานที่ตรงกับเงื่อนไข</p>
       } @else {
         @if (isRecommendationMode()) {
-          <p class="text-sm text-muted mb-4">เรียงตามความเหมาะสมกับโปรไฟล์ของคุณ (Content-based Filtering + Weighted Scoring)</p>
+          <p class="text-sm text-muted mb-4">เรียงตามความเหมาะสมกับโปรไฟล์ของคุณ (Content-based Filtering + Jaccard Similarity)</p>
         }
         <div class="grid gap-4">
           @for (job of filteredJobs(); track job.jobId) {

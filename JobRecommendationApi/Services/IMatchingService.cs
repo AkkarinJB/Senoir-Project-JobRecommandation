@@ -1,9 +1,11 @@
+using JobRecommendationApi.DTOs;
+
 namespace JobRecommendationApi.Services
 {
     public interface IMatchingService
     {
-        double CalculateCosineSimilarity(string jobSkills, string candidateSkills);
+        double CalculateJaccardSimilarity(string jobSkills, string candidateSkills);
 
-        double CalculateLocationScore(string? candidateLocation, string? jobLocation);
+        JaccardDemoResultDto GetJaccardBreakdown(string jobSkills, string candidateSkills);
     }
 }

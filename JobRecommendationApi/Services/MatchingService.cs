@@ -1,69 +1,56 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JobRecommendationApi.DTOs;
 
 namespace JobRecommendationApi.Services
 {
     public class MatchingService : IMatchingService
     {
-        public double CalculateCosineSimilarity(string jobSkills, string candidateSkills)
+        public double CalculateJaccardSimilarity(string jobSkills, string candidateSkills)
         {
             if (string.IsNullOrWhiteSpace(jobSkills) || string.IsNullOrWhiteSpace(candidateSkills))
             {
                 return 0.0;
             }
 
-            char[] delimiters = { ',', ' ' };
-            var listA = jobSkills.Split(delimiters, StringSplitOptions.RemoveEmptyEntries)
-                                 .Select(s => s.ToLowerInvariant().Trim()).ToList();
-            
-            var listB = candidateSkills.Split(delimiters, StringSplitOptions.RemoveEmptyEntries)
-                                       .Select(s => s.ToLowerInvariant().Trim()).ToList();
-
-            var allUniqueSkills = listA.Union(listB).Distinct().ToList();
-
-            var vectorA = allUniqueSkills.Select(skill => listA.Contains(skill) ? 1.0 : 0.0).ToList();
-            var vectorB = allUniqueSkills.Select(skill => listB.Contains(skill) ? 1.0 : 0.0).ToList();
-
-            double dotProduct = 0.0;
-            for (int i = 0; i < allUniqueSkills.Count; i++)
-            {
-                dotProduct += vectorA[i] * vectorB[i];
-            }
-
-            double magnitudeA = Math.Sqrt(vectorA.Sum(x => x * x));
-            double magnitudeB = Math.Sqrt(vectorB.Sum(x => x * x));
-
-            if (magnitudeA == 0 || magnitudeB == 0)
-            {
-                return 0.0;
-            }
-
-            double similarity = dotProduct / (magnitudeA * magnitudeB);
-            return Math.Round(similarity * 100, 2);
+            return GetJaccardBreakdown(jobSkills, candidateSkills).MatchPercentage;
         }
 
-        public double CalculateLocationScore(string? candidateLocation, string? jobLocation)
+        public JaccardDemoResultDto GetJaccardBreakdown(string jobSkills, string candidateSkills)
         {
-            if (string.IsNullOrWhiteSpace(candidateLocation))
+            char[] delimiters = { ',', ' ' };
+
+            var setA = new HashSet<string>(
+                (jobSkills ?? string.Empty).Split(delimiters, StringSplitOptions.RemoveEmptyEntries)
+                .Select(word => word.ToLowerInvariant().Trim())
+            );
+
+            var setB = new HashSet<string>(
+                (candidateSkills ?? string.Empty).Split(delimiters, StringSplitOptions.RemoveEmptyEntries)
+                .Select(word => word.ToLowerInvariant().Trim())
+            );
+
+            var intersection = setA.Intersect(setB).ToList();
+            var union = setA.Union(setB).ToList();
+
+            double matchPercentage = 0.0;
+            if (union.Count > 0)
             {
-                return 50.0;
+                double jaccardIndex = (double)intersection.Count / union.Count;
+                matchPercentage = Math.Round(jaccardIndex * 100, 2);
             }
 
-            if (string.IsNullOrWhiteSpace(jobLocation))
+            return new JaccardDemoResultDto
             {
-                return 0.0;
-            }
-
-            var candidate = candidateLocation.Trim().ToLowerInvariant();
-            var job = jobLocation.Trim().ToLowerInvariant();
-
-            if (candidate == job) return 100.0;
-
-            // ตรงกันบางส่วน เช่น ผู้สมัครระบุ "อุดรธานี" ตรงกับประกาศ "อ.เมือง อุดรธานี"
-            if (job.Contains(candidate) || candidate.Contains(job)) return 70.0;
-
-            return 0.0;
+                SetA = setA.ToList(),
+                SetB = setB.ToList(),
+                Intersection = intersection,
+                Union = union,
+                IntersectionCount = intersection.Count,
+                UnionCount = union.Count,
+                MatchPercentage = matchPercentage
+            };
         }
     }
 }

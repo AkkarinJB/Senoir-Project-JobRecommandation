@@ -33,27 +33,9 @@ namespace JobRecommendationApi.Controllers
             var allJobs = _context.JobPosts.Where(j => j.IsActive).ToList();
             var recommendations = new List<JobRecommendationResultDto>();
 
-            double weightSkills = 0.5;
-            double weightSalary = 0.3;
-            double weightLocation = 0.2;
-
             foreach (var job in allJobs)
             {
-                double skillScore = _matchingService.CalculateCosineSimilarity(job.RequiredSkills, profile.Skills);
-
-                double salaryScore = 0;
-                if (profile.ExpectedSalary <= job.OfferedSalary)
-                {
-                    salaryScore = 100.0;
-                }
-                else if (profile.ExpectedSalary > 0)
-                {
-                    salaryScore = (double)(job.OfferedSalary / profile.ExpectedSalary) * 100;
-                }
-
-                double locationScore = _matchingService.CalculateLocationScore(profile.PreferredLocation, job.Location);
-
-                double finalScore = (skillScore * weightSkills) + (salaryScore * weightSalary) + (locationScore * weightLocation);
+                double matchPercentage = _matchingService.CalculateJaccardSimilarity(job.RequiredSkills, profile.Skills);
 
                 char[] delimiters = { ',', ' ' };
                 var candidateSkills = profile.Skills.Split(delimiters, StringSplitOptions.RemoveEmptyEntries)
@@ -68,10 +50,7 @@ namespace JobRecommendationApi.Controllers
                     Title = job.Title,
                     Location = job.Location,
                     OfferedSalary = job.OfferedSalary,
-                    MatchPercentage = Math.Round(finalScore, 2),
-                    SkillScore = skillScore,
-                    SalaryScore = Math.Round(salaryScore, 2),
-                    LocationScore = locationScore,
+                    MatchPercentage = matchPercentage,
                     MatchedSkills = matchedSkills
                 });
             }

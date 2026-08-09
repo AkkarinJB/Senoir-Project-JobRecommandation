@@ -27,6 +27,11 @@ import { AuthService } from '../../../../core/auth/auth.service';
                  class="text-gray-600 hover:text-brand-600 transition-colors px-3 py-2">
                 ค้นหางาน
               </a>
+              <a routerLink="/algorithm-demo"
+                 routerLinkActive="text-brand-600 font-medium"
+                 class="text-gray-600 hover:text-brand-600 transition-colors px-3 py-2">
+                สาธิตอัลกอริทึม
+              </a>
               @if (authService.role() === 'JobSeeker') {
                 <a routerLink="/my-applications"
                    routerLinkActive="text-brand-600 font-medium"

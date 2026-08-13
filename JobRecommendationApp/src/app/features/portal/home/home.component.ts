@@ -7,7 +7,7 @@ import { RouterLink } from '@angular/router';
   imports: [RouterLink],
   template: `
     <div class="text-center py-16">
-      <h1 class="text-4xl font-bold text-gray-900 mb-4">หางานที่ใช่ ด้วยระบบแนะนำอัจฉริยะ</h1>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">หางานที่ใช่ ด้วยระบบแนะนำ</h1>
       <p class="text-gray-500 mb-8">Udonthani.link — จับคู่ผู้หางานกับผู้ประกอบการด้วย Content-based Filtering</p>
       <a routerLink="/jobs" class="btn-primary px-6 py-3">
         เริ่มค้นหางาน

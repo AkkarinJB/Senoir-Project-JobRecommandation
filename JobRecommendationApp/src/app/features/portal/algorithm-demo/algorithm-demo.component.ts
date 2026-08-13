@@ -17,30 +17,17 @@ interface DemoPreset {
   imports: [FormsModule, DecimalPipe],
   template: `
     <div class="max-w-4xl mx-auto">
-      <h1 class="page-title mb-2">สาธิตอัลกอริทึม Content-based Filtering + Jaccard Similarity</h1>
-      <p class="text-muted mb-6">
-        กรอกทักษะที่ประกาศงานต้องการ (A) และทักษะที่ผู้หางานมี (B) แล้วกด "คำนวณ" เพื่อดูขั้นตอนการทำงานของระบบจริงทีละขั้น
-      </p>
-
-      <div class="card mb-6">
-        <p class="form-label mb-2">ตัวอย่างชุดข้อมูล (กดเพื่อโหลด)</p>
-        <div class="flex flex-wrap gap-2">
-          @for (preset of presets; track preset.label) {
-            <button type="button" class="btn-outline" (click)="loadPreset(preset)">{{ preset.label }}</button>
-          }
-        </div>
-      </div>
-
+      
       <div class="card mb-6">
         <div class="grid md:grid-cols-2 gap-4">
           <div>
             <label class="form-label">A: ทักษะที่ประกาศงานต้องการ</label>
-            <textarea class="form-input" rows="3" placeholder="คั่นด้วยจุลภาค (,) เช่น Excel, การเจรจาต่อรอง"
+            <textarea class="form-input" rows="3" 
                       [(ngModel)]="jobSkillsInput"></textarea>
           </div>
           <div>
             <label class="form-label">B: ทักษะที่ผู้หางานมี</label>
-            <textarea class="form-input" rows="3" placeholder="คั่นด้วยจุลภาค (,) เช่น Excel, การบริการลูกค้า"
+            <textarea class="form-input" rows="3" 
                       [(ngModel)]="candidateSkillsInput"></textarea>
           </div>
         </div>

@@ -30,7 +30,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
               <a routerLink="/algorithm-demo"
                  routerLinkActive="text-brand-600 font-medium"
                  class="text-gray-600 hover:text-brand-600 transition-colors px-3 py-2">
-                สาธิตอัลกอริทึม
+                เเนวคิดอัลกอริทึม
               </a>
               @if (authService.role() === 'JobSeeker') {
                 <a routerLink="/my-applications"

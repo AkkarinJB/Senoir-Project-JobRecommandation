@@ -1,0 +1,30 @@
+<div>
+  <h1 class="page-title">ผู้สมัครในตำแหน่งนี้</h1>
+
+  @if (isLoading()) {
+    <p class="text-muted">กำลังโหลด...</p>
+  } @else if (errorMessage()) {
+    <p class="form-error">{{ errorMessage() }}</p>
+  } @else if (applicants().length === 0) {
+    <p class="text-muted">ยังไม่มีผู้สมัครในตำแหน่งนี้</p>
+  } @else {
+    <div class="grid gap-3">
+      @for (applicant of applicants(); track applicant.applicationId) {
+        <div class="card p-5 flex items-center justify-between gap-4">
+          <div>
+            <h2 class="font-semibold text-gray-900">{{ applicant.candidateName }}</h2>
+            <p class="text-sm text-muted">ทักษะ: {{ applicant.candidateSkills.join(', ') }}</p>
+            <p class="text-sm text-muted">ประสบการณ์ {{ applicant.candidateExperienceYears }} ปี</p>
+            <p class="text-xs text-muted mt-1">สมัครเมื่อ {{ applicant.appliedAt | date: 'd MMM y, HH:mm' }}</p>
+          </div>
+          <select [ngModel]="applicant.status" (ngModelChange)="updateStatus(applicant, $event)"
+                  class="form-input w-auto">
+            @for (status of statuses; track status) {
+              <option [value]="status">{{ statusLabel(status) }}</option>
+            }
+          </select>
+        </div>
+      }
+    </div>
+  }
+</div>

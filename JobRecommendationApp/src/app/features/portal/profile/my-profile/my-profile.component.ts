@@ -1,99 +1,41 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpErrorResponse } from '@angular/common/http';
 import { CandidateProfileService } from '../../../../core/services/candidate-profile.service';
 import { CandidateProfilePayload } from '../../../../core/models/candidate-profile.model';
+import { Skill } from '../../../../core/models/skill.model';
+import { SkillChipSelectComponent } from '../../../../shared/skill-chip-select/skill-chip-select.component';
+import { FormPageBase } from '../../../../shared/base/form-page-base';
 
 @Component({
   selector: 'app-my-profile',
   standalone: true,
-  imports: [FormsModule],
-  template: `
-    <div class="card max-w-xl-5">
-      <h1 class="page-title">โปรไฟล์ของฉัน</h1>
-
-      @if (isLoading()) {
-        <p class="text-muted">กำลังโหลด...</p>
-      } @else {
-        @if (!hasProfile()) {
-          <p class="text-sm text-muted mb-4">คุณยังไม่ได้สร้างโปรไฟล์ — กรอกข้อมูลด้านล่างเพื่อเริ่มใช้งานระบบแนะนำงาน</p>
-        }
-
-        <form (ngSubmit)="submit()" class="space-y-4">
-          <div>
-            <label class="form-label">ชื่อ-นามสกุล</label>
-            <input type="text" name="fullName" [(ngModel)]="form.fullName" required class="form-input" />
-          </div>
-
-          <div>
-            <label class="form-label">ทักษะ (คั่นด้วยจุลภาคหรือเว้นวรรค)</label>
-            <input type="text" name="skills" [(ngModel)]="form.skills" required placeholder="เช่น C#, Angular, SQL"
-                   class="form-input" />
-          </div>
-
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="form-label">เงินเดือนที่คาดหวัง (บาท)</label>
-              <input type="number" name="expectedSalary" [(ngModel)]="form.expectedSalary" min="0" class="form-input" />
-            </div>
-            <div>
-              <label class="form-label">ประสบการณ์ (ปี)</label>
-              <input type="number" name="experienceYears" [(ngModel)]="form.experienceYears" min="0" class="form-input" />
-            </div>
-          </div>
-
-          <div>
-            <label class="form-label">พื้นที่ที่ต้องการทำงาน</label>
-            <input type="text" name="preferredLocation" [(ngModel)]="form.preferredLocation" placeholder="เช่น อุดรธานี"
-                   class="form-input" />
-          </div>
-
-          @if (errorMessage()) {
-            <p class="form-error">{{ errorMessage() }}</p>
-          }
-          @if (successMessage()) {
-            <p class="form-success">{{ successMessage() }}</p>
-          }
-
-          <div class="flex items-center gap-3">
-            <button type="submit" [disabled]="isSubmitting()" class="btn-primary">
-              {{ isSubmitting() ? 'กำลังบันทึก...' : (hasProfile() ? 'บันทึกการแก้ไข' : 'สร้างโปรไฟล์') }}
-            </button>
-            @if (hasProfile()) {
-              <button type="button" (click)="deleteProfile()" [disabled]="isSubmitting()" class="btn-ghost-danger">
-                ลบโปรไฟล์
-              </button>
-            }
-          </div>
-        </form>
-      }
-    </div>
-  `
+  imports: [FormsModule, SkillChipSelectComponent],
+  templateUrl: './my-profile.component.html'
 })
-export class MyProfileComponent {
+export class MyProfileComponent extends FormPageBase {
   private candidateProfileService = inject(CandidateProfileService);
 
-  isLoading = signal(true);
-  isSubmitting = signal(false);
   hasProfile = signal(false);
-  errorMessage = signal<string | null>(null);
-  successMessage = signal<string | null>(null);
+  selectedSkills: Skill[] = [];
 
   form: CandidateProfilePayload = {
     fullName: '',
-    skills: '',
+    skillIds: [],
     expectedSalary: 0,
     experienceYears: 0,
     preferredLocation: ''
   };
 
   constructor() {
+    super();
+    this.isLoading.set(true);
     this.candidateProfileService.getMyProfile().subscribe({
       next: (profile) => {
         this.hasProfile.set(true);
+        this.selectedSkills = profile.skills;
         this.form = {
           fullName: profile.fullName,
-          skills: profile.skills,
+          skillIds: profile.skills.map((s) => s.id),
           expectedSalary: profile.expectedSalary,
           experienceYears: profile.experienceYears,
           preferredLocation: profile.preferredLocation ?? ''
@@ -104,12 +46,24 @@ export class MyProfileComponent {
     });
   }
 
+  onSkillsChange(skills: Skill[]) {
+    this.selectedSkills = skills;
+    this.form.skillIds = skills.map((s) => s.id);
+  }
+
   submit() {
-    if (!this.form.fullName || !this.form.skills) return;
+    this.clearMessages();
+
+    if (!this.form.fullName) {
+      this.errorMessage.set('กรุณากรอกชื่อ-นามสกุล');
+      return;
+    }
+    if (this.form.skillIds.length === 0) {
+      this.errorMessage.set('กรุณาเพิ่มทักษะอย่างน้อย 1 รายการ (พิมพ์แล้วกด Enter หรือเลือกจากรายการ)');
+      return;
+    }
 
     this.isSubmitting.set(true);
-    this.errorMessage.set(null);
-    this.successMessage.set(null);
 
     const request = this.hasProfile()
       ? this.candidateProfileService.updateProfile(this.form)
@@ -119,11 +73,11 @@ export class MyProfileComponent {
       next: () => {
         this.isSubmitting.set(false);
         this.hasProfile.set(true);
-        this.successMessage.set('บันทึกโปรไฟล์สำเร็จ');
+        this.setSuccess('บันทึกโปรไฟล์สำเร็จ');
       },
-      error: (err: HttpErrorResponse) => {
+      error: (err) => {
         this.isSubmitting.set(false);
-        this.errorMessage.set(typeof err.error === 'string' ? err.error : 'บันทึกไม่สำเร็จ กรุณาลองใหม่');
+        this.setError(err, 'บันทึกไม่สำเร็จ กรุณาลองใหม่');
       }
     });
   }
@@ -134,10 +88,11 @@ export class MyProfileComponent {
     this.candidateProfileService.deleteProfile().subscribe({
       next: () => {
         this.hasProfile.set(false);
-        this.form = { fullName: '', skills: '', expectedSalary: 0, experienceYears: 0, preferredLocation: '' };
-        this.successMessage.set('ลบโปรไฟล์สำเร็จ');
+        this.selectedSkills = [];
+        this.form = { fullName: '', skillIds: [], expectedSalary: 0, experienceYears: 0, preferredLocation: '' };
+        this.setSuccess('ลบโปรไฟล์สำเร็จ');
       },
-      error: () => this.errorMessage.set('ลบโปรไฟล์ไม่สำเร็จ กรุณาลองใหม่')
+      error: (err) => this.setError(err, 'ลบโปรไฟล์ไม่สำเร็จ กรุณาลองใหม่')
     });
   }
 }

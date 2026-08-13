@@ -10,14 +10,12 @@ namespace JobRecommendationApi.Controllers.Admin
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "Admin")]
-    public class AdminController : ControllerBase
+    public class AdminController : BaseApiController
     {
-        private readonly AppDbContext _context;
         private readonly INotificationService _notificationService;
 
-        public AdminController(AppDbContext context, INotificationService notificationService)
+        public AdminController(AppDbContext context, INotificationService notificationService) : base(context)
         {
-            _context = context;
             _notificationService = notificationService;
         }
 

@@ -14,21 +14,7 @@ export interface CategoryFormDialogData {
   selector: 'app-category-form-dialog',
   standalone: true,
   imports: [FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule],
-  template: `
-    <h2 mat-dialog-title>{{ data.category ? 'แก้ไขหมวดหมู่' : 'เพิ่มหมวดหมู่ใหม่' }}</h2>
-    <form (ngSubmit)="save()">
-      <mat-dialog-content>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>ชื่อหมวดหมู่</mat-label>
-          <input matInput name="name" [(ngModel)]="name" required cdkFocusInitial />
-        </mat-form-field>
-      </mat-dialog-content>
-      <mat-dialog-actions align="end">
-        <button mat-button type="button" (click)="dialogRef.close()">ยกเลิก</button>
-        <button mat-flat-button color="primary" type="submit" [disabled]="!name.trim()">บันทึก</button>
-      </mat-dialog-actions>
-    </form>
-  `
+  templateUrl: './category-form-dialog.component.html'
 })
 export class CategoryFormDialogComponent {
   dialogRef = inject(MatDialogRef<CategoryFormDialogComponent>);

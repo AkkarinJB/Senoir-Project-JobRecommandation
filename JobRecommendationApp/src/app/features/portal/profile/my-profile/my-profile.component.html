@@ -1,0 +1,58 @@
+<div class="card max-w-xl-5">
+  <h1 class="page-title">โปรไฟล์ของฉัน</h1>
+
+  @if (isLoading()) {
+    <p class="text-muted">กำลังโหลด...</p>
+  } @else {
+    @if (!hasProfile()) {
+      <p class="text-sm text-muted mb-4">คุณยังไม่ได้สร้างโปรไฟล์ — กรอกข้อมูลด้านล่างเพื่อเริ่มใช้งานระบบแนะนำงาน</p>
+    }
+
+    <form (ngSubmit)="submit()" class="space-y-4">
+      <div>
+        <label class="form-label">ชื่อ-นามสกุล</label>
+        <input type="text" name="fullName" [(ngModel)]="form.fullName" required class="form-input" />
+      </div>
+
+      <div>
+        <label class="form-label">ทักษะ</label>
+        <app-skill-chip-select [selected]="selectedSkills" (selectedChange)="onSkillsChange($event)" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="form-label">เงินเดือนที่คาดหวัง (บาท)</label>
+          <input type="number" name="expectedSalary" [(ngModel)]="form.expectedSalary" min="0" class="form-input" />
+        </div>
+        <div>
+          <label class="form-label">ประสบการณ์ (ปี)</label>
+          <input type="number" name="experienceYears" [(ngModel)]="form.experienceYears" min="0" class="form-input" />
+        </div>
+      </div>
+
+      <div>
+        <label class="form-label">พื้นที่ที่ต้องการทำงาน</label>
+        <input type="text" name="preferredLocation" [(ngModel)]="form.preferredLocation" placeholder="เช่น อุดรธานี"
+               class="form-input" />
+      </div>
+
+      @if (errorMessage()) {
+        <p class="form-error">{{ errorMessage() }}</p>
+      }
+      @if (successMessage()) {
+        <p class="form-success">{{ successMessage() }}</p>
+      }
+
+      <div class="flex items-center gap-3">
+        <button type="submit" [disabled]="isSubmitting()" class="btn-primary">
+          {{ isSubmitting() ? 'กำลังบันทึก...' : (hasProfile() ? 'บันทึกการแก้ไข' : 'สร้างโปรไฟล์') }}
+        </button>
+        @if (hasProfile()) {
+          <button type="button" (click)="deleteProfile()" [disabled]="isSubmitting()" class="btn-ghost-danger">
+            ลบโปรไฟล์
+          </button>
+        }
+      </div>
+    </form>
+  }
+</div>

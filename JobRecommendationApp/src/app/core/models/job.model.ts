@@ -1,9 +1,11 @@
+import { Skill } from './skill.model';
+
 export interface JobPost {
   id: number;
   title: string;
   description: string;
   companyName: string;
-  requiredSkills: string;
+  requiredSkills: Skill[];
   offeredSalary: number;
   location: string;
   employerId: number;
@@ -17,7 +19,7 @@ export interface JobPostPayload {
   title: string;
   description: string;
   companyName: string;
-  requiredSkills: string;
+  skillIds: number[];
   offeredSalary: number;
   location: string;
   categoryId: number | null;

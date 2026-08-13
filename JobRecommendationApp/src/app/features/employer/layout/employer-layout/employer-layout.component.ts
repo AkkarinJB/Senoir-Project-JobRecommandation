@@ -6,13 +6,6 @@ import { EmployerSidebarComponent } from '../employer-sidebar/employer-sidebar.c
   selector: 'app-employer-layout',
   standalone: true,
   imports: [RouterOutlet, EmployerSidebarComponent],
-  template: `
-    <div class="flex h-screen bg-gray-100">
-      <app-employer-sidebar />
-      <main class="flex-1 p-8 overflow-y-auto">
-        <router-outlet></router-outlet>
-      </main>
-    </div>
-  `
+  templateUrl: './employer-layout.component.html'
 })
 export class EmployerLayoutComponent {}

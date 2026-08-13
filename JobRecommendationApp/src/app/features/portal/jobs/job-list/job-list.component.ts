@@ -9,9 +9,8 @@ import { RecommendationService } from '../../../../core/services/recommendation.
 import { AuthService } from '../../../../core/auth/auth.service';
 import { JobPost } from '../../../../core/models/job.model';
 import { JobRecommendation } from '../../../../core/models/recommendation.model';
+import { ListPageBase } from '../../../../shared/base/list-page-base';
 
-// รายการงานแบบรวม: ถ้าเป็น JobSeeker ที่มีโปรไฟล์แล้ว จะได้ matchPercentage มาด้วยจาก /Recommendation/match-jobs
-// ไม่งั้นแสดงเป็นรายการทั่วไปจาก GET /api/Job — สองแหล่งข้อมูลนี้ shape ไม่เหมือนกัน (recommendation ไม่มี companyName) จึง map รวมเป็น interface เดียว
 interface JobListItem {
   jobId: number;
   title: string;
@@ -26,62 +25,13 @@ interface JobListItem {
   selector: 'app-job-list',
   standalone: true,
   imports: [CommonModule, RouterLink, FormsModule],
-  template: `
-    <div>
-      <div class="flex items-center justify-between mb-6 gap-4">
-        <h1 class="page-title mb-0">ค้นหางาน</h1>
-        <input type="text" [(ngModel)]="searchTerm" placeholder="ค้นหาด้วยตำแหน่ง / บริษัท"
-               class="form-input max-w-xs" />
-      </div>
-
-      @if (isLoading()) {
-        <p class="text-muted">กำลังโหลดรายการงาน...</p>
-      } @else if (errorMessage()) {
-        <p class="form-error">{{ errorMessage() }}</p>
-      } @else if (filteredJobs().length === 0) {
-        <p class="text-muted">ยังไม่มีประกาศงานที่ตรงกับเงื่อนไข</p>
-      } @else {
-        @if (isRecommendationMode()) {
-          <p class="text-sm text-muted mb-4">เรียงตามความเหมาะสมกับโปรไฟล์ของคุณ (Content-based Filtering + Jaccard Similarity)</p>
-        }
-        <div class="grid gap-4">
-          @for (job of filteredJobs(); track job.jobId) {
-            <a [routerLink]="['/jobs', job.jobId]" class="card block hover:shadow-md transition-shadow p-6">
-              <div class="flex items-start justify-between gap-4">
-                <div>
-                  <h2 class="text-lg font-semibold text-gray-900">{{ job.title }}</h2>
-                  <p class="text-sm text-muted">
-                    {{ job.companyName ? job.companyName + ' · ' : '' }}{{ job.location || 'ไม่ระบุพื้นที่' }}
-                  </p>
-                </div>
-                @if (job.matchPercentage !== null) {
-                  <span class="shrink-0 bg-brand-50 text-brand-700 text-sm font-semibold px-3 py-1 rounded-full">
-                    ตรงกัน {{ job.matchPercentage }}%
-                  </span>
-                }
-              </div>
-              <p class="text-sm text-gray-600 mt-2">เงินเดือน {{ job.offeredSalary | number }} บาท</p>
-              @if (job.matchedSkills.length > 0) {
-                <div class="flex flex-wrap gap-1 mt-3">
-                  @for (skill of job.matchedSkills; track skill) {
-                    <span class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">{{ skill }}</span>
-                  }
-                </div>
-              }
-            </a>
-          }
-        </div>
-      }
-    </div>
-  `
+  templateUrl: './job-list.component.html'
 })
-export class JobListComponent {
+export class JobListComponent extends ListPageBase {
   private jobService = inject(JobService);
   private recommendationService = inject(RecommendationService);
   private authService = inject(AuthService);
 
-  isLoading = signal(true);
-  errorMessage = signal<string | null>(null);
   isRecommendationMode = signal(false);
   searchTerm = '';
 
@@ -96,6 +46,7 @@ export class JobListComponent {
   });
 
   constructor() {
+    super();
     this.loadJobs();
   }
 
@@ -104,7 +55,6 @@ export class JobListComponent {
     this.errorMessage.set(null);
 
     if (this.authService.role() === 'JobSeeker') {
-      // ลองขอคำแนะนำก่อน ถ้ายังไม่มีโปรไฟล์ backend จะตอบ 400 — fallback ไปรายการทั่วไปแทนไม่ให้หน้าใช้งานไม่ได้
       this.recommendationService
         .getRecommendedJobs()
         .pipe(catchError(() => of(null)))
@@ -129,10 +79,7 @@ export class JobListComponent {
         this.jobs.set(jobs.map((j) => this.mapJobPost(j)));
         this.isLoading.set(false);
       },
-      error: () => {
-        this.errorMessage.set('โหลดรายการงานไม่สำเร็จ กรุณาลองใหม่');
-        this.isLoading.set(false);
-      }
+      error: (err) => this.setError(err, 'โหลดรายการงานไม่สำเร็จ กรุณาลองใหม่')
     });
   }
 

@@ -1,0 +1,38 @@
+<div class="relative">
+  <div class="flex flex-wrap gap-2 p-2 border border-gray-300 rounded-lg min-h-[46px] focus-within:ring-2 focus-within:ring-brand-500 focus-within:border-brand-500">
+    @for (skill of selected; track skill.id) {
+      <span class="flex items-center gap-1 bg-brand-50 text-brand-700 text-sm font-medium pl-3 pr-1.5 py-1 rounded-full">
+        {{ skill.name }}
+        <button type="button" (click)="remove(skill)"
+                class="hover:bg-brand-200 rounded-full w-5 h-5 flex items-center justify-center text-brand-700">
+          &times;
+        </button>
+      </span>
+    }
+    <input type="text" [(ngModel)]="query" (focus)="isOpen.set(true)" (input)="isOpen.set(true)"
+           (keydown.enter)="onEnter($event)"
+           [placeholder]="selected.length === 0 ? placeholder : ''"
+           class="flex-1 min-w-[120px] outline-none text-sm py-1" />
+  </div>
+
+  @if (isOpen() && query.trim().length > 0 && (filteredSuggestions().length > 0 || showAddNew())) {
+    <div class="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-56 overflow-auto">
+      @for (skill of filteredSuggestions(); track skill.id) {
+        <button type="button" (click)="add(skill)"
+                class="w-full text-left px-3 py-2 text-sm hover:bg-brand-50 text-gray-700">
+          {{ skill.name }}
+        </button>
+      }
+      @if (showAddNew()) {
+        <button type="button" (click)="addNew()"
+                class="w-full text-left px-3 py-2 text-sm hover:bg-brand-50 text-brand-700 font-medium border-t border-gray-100">
+          + เพิ่ม "{{ query.trim() }}" เป็นทักษะใหม่
+        </button>
+      }
+    </div>
+  }
+</div>
+<p class="text-xs text-muted mt-1">พิมพ์แล้วกด Enter หรือคลิกตัวเลือกเพื่อเพิ่มเป็น chip ก่อนกดบันทึก</p>
+@if (isOpen()) {
+  <div class="fixed inset-0 z-0" (click)="isOpen.set(false)"></div>
+}

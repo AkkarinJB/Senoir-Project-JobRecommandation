@@ -1,8 +1,10 @@
+import { Skill } from './skill.model';
+
 export interface CandidateProfile {
   id: number;
   userId: number;
   fullName: string;
-  skills: string;
+  skills: Skill[];
   expectedSalary: number;
   experienceYears: number;
   preferredLocation: string | null;
@@ -11,7 +13,7 @@ export interface CandidateProfile {
 
 export interface CandidateProfilePayload {
   fullName: string;
-  skills: string;
+  skillIds: number[];
   expectedSalary: number;
   experienceYears: number;
   preferredLocation: string | null;

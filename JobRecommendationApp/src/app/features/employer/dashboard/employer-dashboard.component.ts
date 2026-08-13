@@ -7,31 +7,7 @@ import { EmployerProfileService } from '../../../core/services/employer-profile.
   selector: 'app-employer-dashboard',
   standalone: true,
   imports: [RouterLink],
-  template: `
-    <div>
-      <h1 class="page-title">Dashboard ผู้ประกอบการ</h1>
-
-      <div class="grid grid-cols-2 gap-4 max-w-lg mb-6">
-        <div class="card">
-          <p class="text-sm text-muted">ประกาศงานทั้งหมด</p>
-          <p class="text-3xl font-bold text-gray-900">{{ totalJobs() }}</p>
-        </div>
-        <div class="card">
-          <p class="text-sm text-muted">เปิดรับสมัครอยู่</p>
-          <p class="text-3xl font-bold text-gray-900">{{ activeJobs() }}</p>
-        </div>
-      </div>
-
-      @if (!isVerified() && !isLoadingProfile()) {
-        <p class="text-sm text-amber-700 bg-amber-50 rounded-lg px-4 py-3 mb-6">
-          บัญชีบริษัทของคุณยังไม่ได้รับการยืนยันตัวตน —
-          <a routerLink="/employer/company-profile" class="underline">ไปที่ข้อมูลบริษัท</a>
-        </p>
-      }
-
-      <a routerLink="/employer/jobs" class="btn-primary">จัดการประกาศงาน</a>
-    </div>
-  `
+  templateUrl: './employer-dashboard.component.html'
 })
 export class EmployerDashboardComponent {
   private jobService = inject(JobService);

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { JobApplicationService } from '../../../core/services/job-application.service';
 import { APPLICATION_STATUSES, ApplicantResult, ApplicationStatus } from '../../../core/models/job-application.model';
+import { ListPageBase } from '../../../shared/base/list-page-base';
 
 const STATUS_LABEL: Record<ApplicationStatus, string> = {
   Applied: 'รอพิจารณา',
@@ -16,54 +17,25 @@ const STATUS_LABEL: Record<ApplicationStatus, string> = {
   selector: 'app-employer-applicants',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  template: `
-    <div>
-      <h1 class="page-title">ผู้สมัครในตำแหน่งนี้</h1>
-
-      @if (isLoading()) {
-        <p class="text-muted">กำลังโหลด...</p>
-      } @else if (applicants().length === 0) {
-        <p class="text-muted">ยังไม่มีผู้สมัครในตำแหน่งนี้</p>
-      } @else {
-        <div class="grid gap-3">
-          @for (applicant of applicants(); track applicant.applicationId) {
-            <div class="card p-5 flex items-center justify-between gap-4">
-              <div>
-                <h2 class="font-semibold text-gray-900">{{ applicant.candidateName }}</h2>
-                <p class="text-sm text-muted">ทักษะ: {{ applicant.candidateSkills }}</p>
-                <p class="text-sm text-muted">ประสบการณ์ {{ applicant.candidateExperienceYears }} ปี</p>
-                <p class="text-xs text-muted mt-1">สมัครเมื่อ {{ applicant.appliedAt | date: 'd MMM y, HH:mm' }}</p>
-              </div>
-              <select [ngModel]="applicant.status" (ngModelChange)="updateStatus(applicant, $event)"
-                      class="form-input w-auto">
-                @for (status of statuses; track status) {
-                  <option [value]="status">{{ statusLabel(status) }}</option>
-                }
-              </select>
-            </div>
-          }
-        </div>
-      }
-    </div>
-  `
+  templateUrl: './employer-applicants.component.html'
 })
-export class EmployerApplicantsComponent {
+export class EmployerApplicantsComponent extends ListPageBase {
   private route = inject(ActivatedRoute);
   private jobApplicationService = inject(JobApplicationService);
 
   jobId = Number(this.route.snapshot.paramMap.get('jobId'));
   statuses = APPLICATION_STATUSES;
 
-  isLoading = signal(true);
   applicants = signal<ApplicantResult[]>([]);
 
   constructor() {
+    super();
     this.jobApplicationService.getApplicantsForJob(this.jobId).subscribe({
       next: (applicants) => {
         this.applicants.set(applicants);
         this.isLoading.set(false);
       },
-      error: () => this.isLoading.set(false)
+      error: (err) => this.setError(err, 'โหลดรายชื่อผู้สมัครไม่สำเร็จ กรุณาลองใหม่')
     });
   }
 

@@ -15,96 +15,7 @@ interface DemoPreset {
   selector: 'app-algorithm-demo',
   standalone: true,
   imports: [FormsModule, DecimalPipe],
-  template: `
-    <div class="max-w-4xl mx-auto">
-      
-      <div class="card mb-6">
-        <div class="grid md:grid-cols-2 gap-4">
-          <div>
-            <label class="form-label">A: ทักษะที่ประกาศงานต้องการ</label>
-            <textarea class="form-input" rows="3" 
-                      [(ngModel)]="jobSkillsInput"></textarea>
-          </div>
-          <div>
-            <label class="form-label">B: ทักษะที่ผู้หางานมี</label>
-            <textarea class="form-input" rows="3" 
-                      [(ngModel)]="candidateSkillsInput"></textarea>
-          </div>
-        </div>
-        <button type="button" class="btn-primary mt-4" [disabled]="isLoading()" (click)="calculate()">
-          {{ isLoading() ? 'กำลังคำนวณ...' : 'คำนวณ' }}
-        </button>
-        @if (errorMessage()) {
-          <p class="form-error mt-2">{{ errorMessage() }}</p>
-        }
-      </div>
-
-      @if (result(); as r) {
-        <div class="grid gap-4">
-          <div class="card">
-            <p class="font-semibold text-gray-900 mb-3">ขั้นตอนที่ 1 — แจกแจงและนับจำนวนทักษะ</p>
-            <div class="grid md:grid-cols-2 gap-4">
-              <div>
-                <p class="text-sm text-muted mb-2">เซต A (ทักษะที่งานต้องการ) — {{ r.setA.length }} ทักษะ</p>
-                <div class="flex flex-wrap gap-1">
-                  @for (skill of r.setA; track skill) {
-                    <span class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">{{ skill }}</span>
-                  }
-                </div>
-              </div>
-              <div>
-                <p class="text-sm text-muted mb-2">เซต B (ทักษะที่ผู้หางานมี) — {{ r.setB.length }} ทักษะ</p>
-                <div class="flex flex-wrap gap-1">
-                  @for (skill of r.setB; track skill) {
-                    <span class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">{{ skill }}</span>
-                  }
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <p class="font-semibold text-gray-900 mb-3">ขั้นตอนที่ 2 — หาทักษะที่ตรงกัน (Intersection, A ∩ B)</p>
-            @if (r.intersection.length > 0) {
-              <div class="flex flex-wrap gap-1 mb-2">
-                @for (skill of r.intersection; track skill) {
-                  <span class="text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded font-medium">{{ skill }}</span>
-                }
-              </div>
-            } @else {
-              <p class="text-sm text-muted mb-2">ไม่มีทักษะที่ตรงกันเลย</p>
-            }
-            <p class="text-sm text-muted">จำนวนทักษะที่ตรงกัน |A ∩ B| = {{ r.intersectionCount }}</p>
-          </div>
-
-          <div class="card">
-            <p class="font-semibold text-gray-900 mb-3">ขั้นตอนที่ 3 — หาทักษะทั้งหมดรวมกันโดยไม่นับซ้ำ (Union, A ∪ B)</p>
-            <div class="flex flex-wrap gap-1 mb-2">
-              @for (skill of r.union; track skill) {
-                <span class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">{{ skill }}</span>
-              }
-            </div>
-            <p class="text-sm text-muted">จำนวนทักษะรวมทั้งหมด |A ∪ B| = {{ r.unionCount }}</p>
-          </div>
-
-          <div class="card">
-            <p class="font-semibold text-gray-900 mb-3">ขั้นตอนที่ 4 — แทนค่าในสมการ Jaccard Similarity</p>
-            <p class="text-lg font-mono text-gray-800">
-              J(A,B) = |A ∩ B| / |A ∪ B| = {{ r.intersectionCount }} / {{ r.unionCount }}
-              @if (r.unionCount > 0) {
-                ≈ {{ (r.intersectionCount / r.unionCount) | number: '1.0-4' }}
-              }
-            </p>
-          </div>
-
-          <div class="card bg-brand-50 border-brand-200">
-            <p class="font-semibold text-gray-900 mb-2">ขั้นตอนที่ 5 — คำนวณเปอร์เซ็นต์ความเหมาะสม</p>
-            <p class="text-4xl font-bold text-brand-700">{{ r.matchPercentage }}%</p>
-          </div>
-        </div>
-      }
-    </div>
-  `
+  templateUrl: './algorithm-demo.component.html'
 })
 export class AlgorithmDemoComponent {
   private algorithmDemoService = inject(AlgorithmDemoService);
@@ -115,7 +26,6 @@ export class AlgorithmDemoComponent {
   errorMessage = signal<string | null>(null);
   result = signal<JaccardDemoResult | null>(null);
 
-  // ชุดตัวอย่างครอบคลุมทั้งกรณี match สูง / ปานกลาง / ต่ำ / ไม่ตรงกันเลย ไว้กดโชว์สดต่อกรรมการ
   presets: DemoPreset[] = [
     {
       label: 'ตัวอย่างจากเอกสาร (28.57%)',

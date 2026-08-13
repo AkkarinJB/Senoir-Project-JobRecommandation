@@ -13,8 +13,7 @@ namespace JobRecommendationApi.Models
         [MaxLength(100)]
         public string FullName { get; set; } = string.Empty;
 
-        [Required]
-        public string Skills { get; set; } = string.Empty;
+        public ICollection<Skill> Skills { get; set; } = new List<Skill>();
 
         public decimal ExpectedSalary { get; set; }
 

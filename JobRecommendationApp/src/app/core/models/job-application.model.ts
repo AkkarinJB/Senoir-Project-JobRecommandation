@@ -18,7 +18,7 @@ export interface ApplicantResult {
   jobTitle: string;
   candidateProfileId: number;
   candidateName: string;
-  candidateSkills: string;
+  candidateSkills: string[];
   candidateExperienceYears: number;
   status: ApplicationStatus;
   appliedAt: string;

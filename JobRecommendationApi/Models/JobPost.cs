@@ -15,8 +15,7 @@ namespace JobRecommendationApi.Models
         [Required]
         public string CompanyName { get; set; } = string.Empty;
 
-        [Required]
-        public string RequiredSkills { get; set; } = string.Empty;
+        public ICollection<Skill> RequiredSkills { get; set; } = new List<Skill>();
 
         public decimal OfferedSalary { get; set; }
 

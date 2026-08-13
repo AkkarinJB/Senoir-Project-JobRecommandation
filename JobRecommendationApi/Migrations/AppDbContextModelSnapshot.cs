@@ -22,6 +22,36 @@ namespace JobRecommendationApi.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("CandidateProfileSkill", b =>
+                {
+                    b.Property<int>("CandidateProfileId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SkillsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CandidateProfileId", "SkillsId");
+
+                    b.HasIndex("SkillsId");
+
+                    b.ToTable("CandidateProfileSkills", (string)null);
+                });
+
+            modelBuilder.Entity("JobPostSkill", b =>
+                {
+                    b.Property<int>("JobPostId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequiredSkillsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("JobPostId", "RequiredSkillsId");
+
+                    b.HasIndex("RequiredSkillsId");
+
+                    b.ToTable("JobPostSkills", (string)null);
+                });
+
             modelBuilder.Entity("JobRecommendationApi.Models.CandidateProfile", b =>
                 {
                     b.Property<int>("Id")
@@ -44,10 +74,6 @@ namespace JobRecommendationApi.Migrations
                     b.Property<string>("PreferredLocation")
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
-
-                    b.Property<string>("Skills")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
@@ -199,10 +225,6 @@ namespace JobRecommendationApi.Migrations
                     b.Property<decimal>("OfferedSalary")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("RequiredSkills")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -287,6 +309,27 @@ namespace JobRecommendationApi.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
+            modelBuilder.Entity("JobRecommendationApi.Models.Skill", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Skills");
+                });
+
             modelBuilder.Entity("JobRecommendationApi.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -326,6 +369,36 @@ namespace JobRecommendationApi.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("CandidateProfileSkill", b =>
+                {
+                    b.HasOne("JobRecommendationApi.Models.CandidateProfile", null)
+                        .WithMany()
+                        .HasForeignKey("CandidateProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("JobRecommendationApi.Models.Skill", null)
+                        .WithMany()
+                        .HasForeignKey("SkillsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("JobPostSkill", b =>
+                {
+                    b.HasOne("JobRecommendationApi.Models.JobPost", null)
+                        .WithMany()
+                        .HasForeignKey("JobPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("JobRecommendationApi.Models.Skill", null)
+                        .WithMany()
+                        .HasForeignKey("RequiredSkillsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

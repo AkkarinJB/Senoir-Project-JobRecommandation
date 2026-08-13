@@ -7,20 +7,16 @@ namespace JobRecommendationApi.Controllers.Notifications
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class NotificationController : ControllerBase
+    public class NotificationController : BaseApiController
     {
-        private readonly AppDbContext _context;
-
-        public NotificationController(AppDbContext context)
+        public NotificationController(AppDbContext context) : base(context)
         {
-            _context = context;
         }
 
         [HttpGet("my-notifications")]
         public IActionResult GetMyNotifications()
         {
-            var username = User.Identity?.Name;
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = GetCurrentUser();
             if (user == null) return Unauthorized();
 
             var notifications = _context.Notifications
@@ -34,8 +30,7 @@ namespace JobRecommendationApi.Controllers.Notifications
         [HttpPut("{id}/read")]
         public IActionResult MarkAsRead(int id)
         {
-            var username = User.Identity?.Name;
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = GetCurrentUser();
             if (user == null) return Unauthorized();
 
             var notification = _context.Notifications.FirstOrDefault(n => n.Id == id && n.UserId == user.Id);
@@ -50,8 +45,7 @@ namespace JobRecommendationApi.Controllers.Notifications
         [HttpPut("read-all")]
         public IActionResult MarkAllAsRead()
         {
-            var username = User.Identity?.Name;
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = GetCurrentUser();
             if (user == null) return Unauthorized();
 
             var unread = _context.Notifications.Where(n => n.UserId == user.Id && !n.IsRead).ToList();

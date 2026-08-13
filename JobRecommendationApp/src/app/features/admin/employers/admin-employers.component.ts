@@ -1,52 +1,20 @@
 import { Component, inject, signal } from '@angular/core';
 import { AdminService } from '../../../core/services/admin.service';
 import { EmployerProfile } from '../../../core/models/employer-profile.model';
+import { ListPageBase } from '../../../shared/base/list-page-base';
 
 @Component({
   selector: 'app-admin-employers',
   standalone: true,
-  template: `
-    <div>
-      <h1 class="page-title">ยืนยันตัวตนผู้ประกอบการ</h1>
-
-      @if (isLoading()) {
-        <p class="text-muted">กำลังโหลด...</p>
-      } @else if (employers().length === 0) {
-        <p class="text-muted">ไม่มีบริษัทที่รอการยืนยันตัวตนในขณะนี้</p>
-      } @else {
-        <div class="grid gap-3">
-          @for (employer of employers(); track employer.id) {
-            <div class="card p-5 flex items-start justify-between gap-4">
-              <div>
-                <h2 class="font-semibold text-gray-900">{{ employer.companyName }}</h2>
-                @if (employer.companyDescription) {
-                  <p class="text-sm text-muted mt-1">{{ employer.companyDescription }}</p>
-                }
-                @if (employer.address) {
-                  <p class="text-sm text-muted">ที่อยู่: {{ employer.address }}</p>
-                }
-                @if (employer.website) {
-                  <p class="text-sm text-muted">เว็บไซต์: {{ employer.website }}</p>
-                }
-              </div>
-              <div class="flex gap-2 shrink-0">
-                <button (click)="verify(employer.id)" class="btn-primary">ยืนยันตัวตน</button>
-                <button (click)="reject(employer.id)" class="btn-outline">ปฏิเสธ</button>
-              </div>
-            </div>
-          }
-        </div>
-      }
-    </div>
-  `
+  templateUrl: './admin-employers.component.html'
 })
-export class AdminEmployersComponent {
+export class AdminEmployersComponent extends ListPageBase {
   private adminService = inject(AdminService);
 
-  isLoading = signal(true);
   employers = signal<EmployerProfile[]>([]);
 
   constructor() {
+    super();
     this.load();
   }
 
@@ -56,7 +24,7 @@ export class AdminEmployersComponent {
         this.employers.set(employers);
         this.isLoading.set(false);
       },
-      error: () => this.isLoading.set(false)
+      error: (err) => this.setError(err, 'โหลดรายชื่อผู้ประกอบการไม่สำเร็จ กรุณาลองใหม่')
     });
   }
 

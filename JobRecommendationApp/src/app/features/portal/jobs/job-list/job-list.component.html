@@ -1,0 +1,46 @@
+<div>
+  <div class="flex items-center justify-between mb-6 gap-4">
+    <h1 class="page-title mb-0">ค้นหางาน</h1>
+    <input type="text" [(ngModel)]="searchTerm" placeholder="ค้นหาด้วยตำแหน่ง / บริษัท"
+           class="form-input max-w-xs" />
+  </div>
+
+  @if (isLoading()) {
+    <p class="text-muted">กำลังโหลดรายการงาน...</p>
+  } @else if (errorMessage()) {
+    <p class="form-error">{{ errorMessage() }}</p>
+  } @else if (filteredJobs().length === 0) {
+    <p class="text-muted">ยังไม่มีประกาศงานที่ตรงกับเงื่อนไข</p>
+  } @else {
+    @if (isRecommendationMode()) {
+      <p class="text-sm text-muted mb-4">เรียงตามความเหมาะสมกับโปรไฟล์ของคุณ (Content-based Filtering + Jaccard Similarity)</p>
+    }
+    <div class="grid gap-4">
+      @for (job of filteredJobs(); track job.jobId) {
+        <a [routerLink]="['/jobs', job.jobId]" class="card block hover:shadow-md transition-shadow p-6">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h2 class="text-lg font-semibold text-gray-900">{{ job.title }}</h2>
+              <p class="text-sm text-muted">
+                {{ job.companyName ? job.companyName + ' · ' : '' }}{{ job.location || 'ไม่ระบุพื้นที่' }}
+              </p>
+            </div>
+            @if (job.matchPercentage !== null) {
+              <span class="shrink-0 bg-brand-50 text-brand-700 text-sm font-semibold px-3 py-1 rounded-full">
+                ตรงกัน {{ job.matchPercentage }}%
+              </span>
+            }
+          </div>
+          <p class="text-sm text-gray-600 mt-2">เงินเดือน {{ job.offeredSalary | number }} บาท</p>
+          @if (job.matchedSkills.length > 0) {
+            <div class="flex flex-wrap gap-1 mt-3">
+              @for (skill of job.matchedSkills; track skill) {
+                <span class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">{{ skill }}</span>
+              }
+            </div>
+          }
+        </a>
+      }
+    </div>
+  }
+</div>

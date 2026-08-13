@@ -9,20 +9,16 @@ namespace JobRecommendationApi.Controllers.Jobs
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "Employer")]
-    public class EmployerProfileController : ControllerBase
+    public class EmployerProfileController : BaseApiController
     {
-        private readonly AppDbContext _context;
-
-        public EmployerProfileController(AppDbContext context)
+        public EmployerProfileController(AppDbContext context) : base(context)
         {
-            _context = context;
         }
 
         [HttpPost]
         public IActionResult CreateProfile(EmployerProfileCreateDto request)
         {
-            var username = User.Identity?.Name;
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = GetCurrentUser();
             if (user == null) return Unauthorized("ไม่พบผู้ใช้งานในระบบ");
 
             var existingProfile = _context.EmployerProfiles.FirstOrDefault(p => p.UserId == user.Id);
@@ -49,8 +45,7 @@ namespace JobRecommendationApi.Controllers.Jobs
         [HttpGet("my-profile")]
         public IActionResult GetMyProfile()
         {
-            var username = User.Identity?.Name;
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = GetCurrentUser();
             if (user == null) return Unauthorized();
 
             var profile = _context.EmployerProfiles.FirstOrDefault(p => p.UserId == user.Id);
@@ -62,8 +57,7 @@ namespace JobRecommendationApi.Controllers.Jobs
         [HttpPut("my-profile")]
         public IActionResult UpdateMyProfile(EmployerProfileCreateDto request)
         {
-            var username = User.Identity?.Name;
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = GetCurrentUser();
             if (user == null) return Unauthorized();
 
             var profile = _context.EmployerProfiles.FirstOrDefault(p => p.UserId == user.Id);

@@ -1,0 +1,69 @@
+<div class="card max-w-2xl">
+  <h1 class="page-title">{{ jobId ? 'แก้ไขประกาศงาน' : 'สร้างประกาศงานใหม่' }}</h1>
+
+  @if (isLoading()) {
+    <p class="text-muted">กำลังโหลด...</p>
+  } @else {
+    <form (ngSubmit)="submit()" class="space-y-4">
+      <div>
+        <label class="form-label">ตำแหน่งงาน</label>
+        <input type="text" name="title" [(ngModel)]="form.title" required class="form-input" />
+      </div>
+
+      <div>
+        <label class="form-label">ชื่อบริษัท</label>
+        <input type="text" name="companyName" [(ngModel)]="form.companyName" required class="form-input" />
+      </div>
+
+      <div>
+        <label class="form-label">ทักษะที่ต้องการ</label>
+        <app-skill-chip-select [selected]="selectedSkills" (selectedChange)="onSkillsChange($event)" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="form-label">เงินเดือนที่เสนอ (บาท)</label>
+          <input type="number" name="offeredSalary" [(ngModel)]="form.offeredSalary" min="0" required class="form-input" />
+        </div>
+        <div>
+          <label class="form-label">พื้นที่ปฏิบัติงาน</label>
+          <input type="text" name="location" [(ngModel)]="form.location" placeholder="เช่น อุดรธานี" class="form-input" />
+        </div>
+      </div>
+
+      <div>
+        <label class="form-label">หมวดหมู่งาน</label>
+        <div class="flex gap-2">
+          <select name="categoryId" [(ngModel)]="form.categoryId" class="form-input">
+            <option [ngValue]="null">-- ไม่ระบุหมวดหมู่ --</option>
+            @for (category of categories(); track category.id) {
+              <option [ngValue]="category.id">{{ category.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="flex gap-2 mt-2">
+          <input type="text" [(ngModel)]="newCategoryName" name="newCategoryName"
+                 placeholder="ไม่เจอหมวดหมู่ที่ต้องการ? พิมพ์ชื่อใหม่แล้วกดเพิ่ม"
+                 class="form-input text-sm" />
+          <button type="button" (click)="addCategory()" [disabled]="!newCategoryName.trim()"
+                  class="btn-outline-active whitespace-nowrap text-sm px-3">
+            + เพิ่มหมวดหมู่
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <label class="form-label">รายละเอียดงาน</label>
+        <textarea name="description" [(ngModel)]="form.description" rows="4" class="form-input"></textarea>
+      </div>
+
+      @if (errorMessage()) {
+        <p class="form-error">{{ errorMessage() }}</p>
+      }
+
+      <button type="submit" [disabled]="isSubmitting()" class="btn-primary">
+        {{ isSubmitting() ? 'กำลังบันทึก...' : (jobId ? 'บันทึกการแก้ไข' : 'สร้างประกาศงาน') }}
+      </button>
+    </form>
+  }
+</div>

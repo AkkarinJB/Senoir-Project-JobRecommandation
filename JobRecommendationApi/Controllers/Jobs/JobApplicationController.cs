@@ -10,14 +10,12 @@ namespace JobRecommendationApi.Controllers.Jobs
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class JobApplicationController : ControllerBase
+    public class JobApplicationController : BaseApiController
     {
-        private readonly AppDbContext _context;
         private readonly INotificationService _notificationService;
 
-        public JobApplicationController(AppDbContext context, INotificationService notificationService)
+        public JobApplicationController(AppDbContext context, INotificationService notificationService) : base(context)
         {
-            _context = context;
             _notificationService = notificationService;
         }
 
@@ -26,8 +24,7 @@ namespace JobRecommendationApi.Controllers.Jobs
         [Authorize(Roles = "JobSeeker")]
         public async Task<IActionResult> Apply(int jobId)
         {
-            var username = User.Identity?.Name;
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = GetCurrentUser();
             if (user == null) return Unauthorized();
 
             var profile = _context.CandidateProfiles.FirstOrDefault(p => p.UserId == user.Id);
@@ -72,8 +69,7 @@ namespace JobRecommendationApi.Controllers.Jobs
         [Authorize(Roles = "JobSeeker")]
         public IActionResult GetMyApplications()
         {
-            var username = User.Identity?.Name;
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = GetCurrentUser();
             if (user == null) return Unauthorized();
 
             var profile = _context.CandidateProfiles.FirstOrDefault(p => p.UserId == user.Id);
@@ -103,8 +99,7 @@ namespace JobRecommendationApi.Controllers.Jobs
         [Authorize(Roles = "Employer")]
         public IActionResult GetApplicantsForJob(int jobId)
         {
-            var username = User.Identity?.Name;
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = GetCurrentUser();
             if (user == null) return Unauthorized();
 
             var job = _context.JobPosts.FirstOrDefault(j => j.Id == jobId);
@@ -123,7 +118,7 @@ namespace JobRecommendationApi.Controllers.Jobs
                     JobTitle = job.Title,
                     CandidateProfileId = c.Id,
                     CandidateName = c.FullName,
-                    CandidateSkills = c.Skills,
+                    CandidateSkills = c.Skills.Select(s => s.Name).ToList(),
                     CandidateExperienceYears = c.ExperienceYears,
                     Status = a.Status,
                     AppliedAt = a.AppliedAt
@@ -142,8 +137,7 @@ namespace JobRecommendationApi.Controllers.Jobs
                 return BadRequest("สถานะไม่ถูกต้อง ต้องเป็นหนึ่งใน: " + string.Join(", ", JobApplicationStatus.All));
             }
 
-            var username = User.Identity?.Name;
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = GetCurrentUser();
             if (user == null) return Unauthorized();
 
             var application = _context.JobApplications.FirstOrDefault(a => a.Id == applicationId);

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using JobRecommendationApi.Data;
 using JobRecommendationApi.Models;
 using JobRecommendationApi.DTOs;
@@ -9,21 +10,16 @@ namespace JobRecommendationApi.Controllers.Jobs
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class CandidateProfileController : ControllerBase
+    public class CandidateProfileController : BaseApiController
     {
-        private readonly AppDbContext _context;
-
-        public CandidateProfileController(AppDbContext context)
+        public CandidateProfileController(AppDbContext context) : base(context)
         {
-            _context = context;
         }
 
         [HttpPost]
         public IActionResult CreateProfile(CandidateProfileCreateDto request)
         {
-            var username = User.Identity?.Name;
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
-            
+            var user = GetCurrentUser();
             if (user == null) return Unauthorized("ไม่พบผู้ใช้งานในระบบ");
 
             var existingProfile = _context.CandidateProfiles.FirstOrDefault(p => p.UserId == user.Id);
@@ -32,11 +28,13 @@ namespace JobRecommendationApi.Controllers.Jobs
                 return BadRequest("คุณได้สร้างโปรไฟล์ไว้เรียบร้อยแล้ว");
             }
 
+            var skills = _context.Skills.Where(s => request.SkillIds.Contains(s.Id)).ToList();
+
             var newProfile = new CandidateProfile
             {
-                UserId = user.Id, 
+                UserId = user.Id,
                 FullName = request.FullName,
-                Skills = request.Skills,
+                Skills = skills,
                 ExpectedSalary = request.ExpectedSalary,
                 ExperienceYears = request.ExperienceYears,
                 PreferredLocation = request.PreferredLocation
@@ -51,12 +49,12 @@ namespace JobRecommendationApi.Controllers.Jobs
         [HttpGet("my-profile")]
         public IActionResult GetMyProfile()
         {
-            var username = User.Identity?.Name;
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
-
+            var user = GetCurrentUser();
             if (user == null) return Unauthorized();
 
-            var profile = _context.CandidateProfiles.FirstOrDefault(p => p.UserId == user.Id);
+            var profile = _context.CandidateProfiles
+                .Include(p => p.Skills)
+                .FirstOrDefault(p => p.UserId == user.Id);
 
             if (profile == null) return NotFound("คุณยังไม่ได้สร้างโปรไฟล์");
 
@@ -66,16 +64,18 @@ namespace JobRecommendationApi.Controllers.Jobs
         [HttpPut("my-profile")]
         public IActionResult UpdateMyProfile(CandidateProfileCreateDto request)
         {
-            var username = User.Identity?.Name;
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
-
+            var user = GetCurrentUser();
             if (user == null) return Unauthorized();
 
-            var profile = _context.CandidateProfiles.FirstOrDefault(p => p.UserId == user.Id);
+            var profile = _context.CandidateProfiles
+                .Include(p => p.Skills)
+                .FirstOrDefault(p => p.UserId == user.Id);
             if (profile == null) return NotFound("คุณยังไม่ได้สร้างโปรไฟล์");
 
+            var skills = _context.Skills.Where(s => request.SkillIds.Contains(s.Id)).ToList();
+
             profile.FullName = request.FullName;
-            profile.Skills = request.Skills;
+            profile.Skills = skills;
             profile.ExpectedSalary = request.ExpectedSalary;
             profile.ExperienceYears = request.ExperienceYears;
             profile.PreferredLocation = request.PreferredLocation;
@@ -89,9 +89,7 @@ namespace JobRecommendationApi.Controllers.Jobs
         [HttpDelete("my-profile")]
         public IActionResult DeleteMyProfile()
         {
-            var username = User.Identity?.Name;
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
-
+            var user = GetCurrentUser();
             if (user == null) return Unauthorized();
 
             var profile = _context.CandidateProfiles.FirstOrDefault(p => p.UserId == user.Id);

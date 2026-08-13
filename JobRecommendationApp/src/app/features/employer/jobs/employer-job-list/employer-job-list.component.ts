@@ -3,62 +3,21 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { JobService } from '../../../../core/services/job.service';
 import { JobPost } from '../../../../core/models/job.model';
+import { ListPageBase } from '../../../../shared/base/list-page-base';
 
 @Component({
   selector: 'app-employer-job-list',
   standalone: true,
   imports: [CommonModule, RouterLink],
-  template: `
-    <div>
-      <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">ประกาศงานของฉัน</h1>
-        <a routerLink="/employer/jobs/create" class="btn-primary">
-          + สร้างประกาศงาน
-        </a>
-      </div>
-
-      @if (isLoading()) {
-        <p class="text-muted">กำลังโหลด...</p>
-      } @else if (jobs().length === 0) {
-        <p class="text-muted">คุณยังไม่มีประกาศงาน กด "สร้างประกาศงาน" เพื่อเริ่มต้น</p>
-      } @else {
-        <div class="grid gap-3">
-          @for (job of jobs(); track job.id) {
-            <div class="card p-5">
-              <div class="flex items-start justify-between gap-4">
-                <div>
-                  <h2 class="font-semibold text-gray-900">{{ job.title }}</h2>
-                  <p class="text-sm text-muted">{{ job.location || 'ไม่ระบุพื้นที่' }} · {{ job.offeredSalary | number }} บาท</p>
-                  <span class="inline-block text-xs font-medium px-2 py-0.5 rounded-full mt-2"
-                        [class.bg-green-50]="job.isActive" [class.text-green-700]="job.isActive"
-                        [class.bg-gray-100]="!job.isActive" [class.text-gray-600]="!job.isActive">
-                    {{ job.isActive ? 'เปิดรับสมัคร' : 'ปิดรับสมัครแล้ว' }}
-                  </span>
-                </div>
-                <div class="flex flex-col items-end gap-2 shrink-0 text-sm">
-                  <a [routerLink]="['/employer/jobs', job.id, 'applicants']" class="text-brand-600 hover:underline">
-                    ดูผู้สมัคร
-                  </a>
-                  <a [routerLink]="['/employer/jobs', job.id, 'edit']" class="text-brand-600 hover:underline">
-                    แก้ไข
-                  </a>
-                  <button (click)="deleteJob(job.id)" class="text-red-600 hover:underline">ลบ</button>
-                </div>
-              </div>
-            </div>
-          }
-        </div>
-      }
-    </div>
-  `
+  templateUrl: './employer-job-list.component.html'
 })
-export class EmployerJobListComponent {
+export class EmployerJobListComponent extends ListPageBase {
   private jobService = inject(JobService);
 
-  isLoading = signal(true);
   jobs = signal<JobPost[]>([]);
 
   constructor() {
+    super();
     this.load();
   }
 
@@ -68,7 +27,7 @@ export class EmployerJobListComponent {
         this.jobs.set(jobs);
         this.isLoading.set(false);
       },
-      error: () => this.isLoading.set(false)
+      error: (err) => this.setError(err, 'โหลดประกาศงานไม่สำเร็จ กรุณาลองใหม่')
     });
   }
 

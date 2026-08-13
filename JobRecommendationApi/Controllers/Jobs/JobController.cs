@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 using JobRecommendationApi.Data;
 using JobRecommendationApi.Models;
 using JobRecommendationApi.DTOs;
@@ -10,31 +10,29 @@ namespace JobRecommendationApi.Controllers.Jobs
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class JobController : ControllerBase
+    public class JobController : BaseApiController
     {
-        private readonly AppDbContext _context;
-        public JobController(AppDbContext context)
+        public JobController(AppDbContext context) : base(context)
         {
-            _context = context;
         }
-
 
         [HttpPost]
         [Authorize(Roles = "Employer")]
         public IActionResult CreateJobPost(JobPostCreateDto request)
         {
-            var username = User.Identity?.Name;
-            var user = _context.Users.FirstOrDefault( u => u.Username == username);
+            var user = GetCurrentUser();
             if (user == null)
             {
                 return Unauthorized("ไม่พบผู้ใช้งานในระบบ");
             }
 
+            var skills = _context.Skills.Where(s => request.SkillIds.Contains(s.Id)).ToList();
+
             var newJob = new JobPost
             {
                 Title = request.Title,
                 Description = request.Description,
-                RequiredSkills = request.RequiredSkills,
+                RequiredSkills = skills,
                 CompanyName = request.CompanyName,
                 OfferedSalary = request.OfferedSalary,
                 Location = request.Location,
@@ -47,12 +45,12 @@ namespace JobRecommendationApi.Controllers.Jobs
             return Ok(new { message = "สร้างประกาศรับสมัครงานเรียบร้อยแล้ว!", jobId = newJob.Id });
         }
 
-
         [AllowAnonymous]
         [HttpGet]
         public IActionResult GetAllJobs()
         {
             var jobs = _context.JobPosts
+            .Include(j => j.RequiredSkills)
             .Where(j => j.IsActive)
             .OrderByDescending(j => j.CreatedAt)
             .ToList();
@@ -64,7 +62,7 @@ namespace JobRecommendationApi.Controllers.Jobs
         [HttpGet("{id}")]
         public IActionResult GetJobById(int id)
         {
-            var job = _context.JobPosts.FirstOrDefault(j => j.Id == id);
+            var job = _context.JobPosts.Include(j => j.RequiredSkills).FirstOrDefault(j => j.Id == id);
             if (job == null) return NotFound("ไม่พบประกาศงานนี้");
 
             return Ok(job);
@@ -74,11 +72,11 @@ namespace JobRecommendationApi.Controllers.Jobs
         [Authorize(Roles = "Employer")]
         public IActionResult GetMyJobs()
         {
-            var username = User.Identity?.Name;
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = GetCurrentUser();
             if (user == null) return Unauthorized();
 
             var jobs = _context.JobPosts
+                .Include(j => j.RequiredSkills)
                 .Where(j => j.EmployerId == user.Id)
                 .OrderByDescending(j => j.CreatedAt)
                 .ToList();
@@ -90,17 +88,18 @@ namespace JobRecommendationApi.Controllers.Jobs
         [Authorize(Roles = "Employer")]
         public IActionResult UpdateJobPost(int id, JobPostCreateDto request)
         {
-            var username = User.Identity?.Name;
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = GetCurrentUser();
             if (user == null) return Unauthorized();
 
-            var job = _context.JobPosts.FirstOrDefault(j => j.Id == id);
+            var job = _context.JobPosts.Include(j => j.RequiredSkills).FirstOrDefault(j => j.Id == id);
             if (job == null) return NotFound("ไม่พบประกาศงานนี้");
             if (job.EmployerId != user.Id) return Forbid();
 
+            var skills = _context.Skills.Where(s => request.SkillIds.Contains(s.Id)).ToList();
+
             job.Title = request.Title;
             job.Description = request.Description;
-            job.RequiredSkills = request.RequiredSkills;
+            job.RequiredSkills = skills;
             job.CompanyName = request.CompanyName;
             job.OfferedSalary = request.OfferedSalary;
             job.Location = request.Location;
@@ -116,8 +115,7 @@ namespace JobRecommendationApi.Controllers.Jobs
         [Authorize(Roles = "Employer")]
         public IActionResult DeleteJobPost(int id)
         {
-            var username = User.Identity?.Name;
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = GetCurrentUser();
             if (user == null) return Unauthorized();
 
             var job = _context.JobPosts.FirstOrDefault(j => j.Id == id);

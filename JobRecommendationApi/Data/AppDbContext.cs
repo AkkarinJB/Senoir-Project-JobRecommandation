@@ -50,12 +50,9 @@ namespace JobRecommendationApi.Data
             modelBuilder.Entity<Notification>()
                 .HasIndex(n => n.UserId);
 
-            // Skill master data — ชื่อห้ามซ้ำ (เช็คซ้ำแบบ case-insensitive เพิ่มเติมในตัว controller ตอนสร้างใหม่)
             modelBuilder.Entity<Skill>()
                 .HasIndex(s => s.Name).IsUnique();
 
-            // many-to-many แยกกันคนละ join table ระหว่าง CandidateProfile<->Skill และ JobPost<->Skill
-            // (ไม่ประกาศ inverse navigation ฝั่ง Skill เพราะไม่จำเป็นต้องใช้งานย้อนกลับ)
             modelBuilder.Entity<CandidateProfile>()
                 .HasMany(p => p.Skills)
                 .WithMany()

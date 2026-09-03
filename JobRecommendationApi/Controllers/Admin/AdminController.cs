@@ -115,7 +115,7 @@ namespace JobRecommendationApi.Controllers.Admin
         }
 
         [HttpPut("categories/{id}")]
-        public IActionResult UpdateCategory(int id, JobCategoryDto request)
+        public IActionResult UpdateCategory(string id, JobCategoryDto request)
         {
             var category = _context.JobCategories.FirstOrDefault(c => c.Id == id);
             if (category == null) return NotFound("ไม่พบหมวดหมู่");
@@ -127,7 +127,7 @@ namespace JobRecommendationApi.Controllers.Admin
         }
 
         [HttpDelete("categories/{id}")]
-        public IActionResult DeleteCategory(int id)
+        public IActionResult DeleteCategory(string id)
         {
             var category = _context.JobCategories.FirstOrDefault(c => c.Id == id);
             if (category == null) return NotFound("ไม่พบหมวดหมู่");

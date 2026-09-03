@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using JobRecommendationApi.Data;
@@ -6,9 +7,6 @@ using JobRecommendationApi.DTOs;
 
 namespace JobRecommendationApi.Controllers.Jobs
 {
-    // Master data endpoint สำหรับ "หมวดหมู่งาน/ตำแหน่งงาน" ที่ผู้ใช้ทั่วไปเรียกดู/เพิ่มรายการใหม่ได้เอง
-    // แยกจาก Controllers/Admin/AdminController.cs ซึ่งยังคุม แก้ไข/ลบ หมวดหมู่แบบ Admin-only ไว้เหมือนเดิม
-    // (หน้า admin-categories ฝั่ง frontend ยังใช้ api/Admin/categories ตามเดิมสำหรับตาราง manage เต็มรูปแบบ)
     [Route("api/[controller]")]
     [ApiController]
     public class CategoryController : BaseApiController
@@ -29,7 +27,6 @@ namespace JobRecommendationApi.Controllers.Jobs
             return Ok(categories);
         }
 
-        // "get or create" — ผู้ใช้ที่ login แล้วทุก role เพิ่มหมวดหมู่ใหม่ได้ทันทีถ้ายังไม่มีในระบบ
         [HttpPost]
         [Authorize]
         public IActionResult CreateCategory(JobCategoryDto request)
@@ -46,7 +43,12 @@ namespace JobRecommendationApi.Controllers.Jobs
                 return Ok(new { existing.Id, existing.Name });
             }
 
-            var category = new JobCategory { Name = name };
+            string newRowKey = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+            
+            var category = new JobCategory { 
+                Id = newRowKey,
+                Name = name 
+                };
             _context.JobCategories.Add(category);
             _context.SaveChanges();
 

@@ -23,7 +23,7 @@ namespace JobRecommendationApi.Models
         public string Location { get; set; } = string.Empty;
         public int EmployerId { get; set; }
 
-        public int? CategoryId { get; set; }
+        public string CategoryId { get; set; } = string.Empty;
 
         public bool IsActive { get; set; } = true;
 

@@ -8,6 +8,6 @@ namespace JobRecommendationApi.DTOs
         public List<int> SkillIds { get; set; } = new List<int>();
         public decimal OfferedSalary { get; set; }
         public string Location { get; set; } = string.Empty;
-        public int? CategoryId { get; set; }
+        public string? CategoryId { get; set; }
     }
 }

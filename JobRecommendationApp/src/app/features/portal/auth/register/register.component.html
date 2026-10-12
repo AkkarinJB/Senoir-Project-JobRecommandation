@@ -1,9 +1,9 @@
 <div class="card max-w-md mx-auto mt-8">
-  <h1 class="page-title">สมัครสมาชิก</h1>
+  <h1 class="page-title text-center mb-6">สมัครสมาชิก</h1>
 
   <form (ngSubmit)="submit()" class="space-y-4">
     <div>
-      <label class="form-label">กรุณาเลือกประเภทการสมัคร</label>
+      <label class="form-label">เลือกประเภทผู้ใช้งาน</label>
       <div class="grid grid-cols-2 gap-3">
         <button type="button" (click)="role = 'JobSeeker'"
                 [class.btn-outline-active]="role === 'JobSeeker'"
@@ -20,17 +20,34 @@
 
     <div>
       <label class="form-label">ชื่อผู้ใช้</label>
-      <input type="text" name="username" [(ngModel)]="username" required class="form-input" />
+      <input 
+            type="text" 
+            name="username" 
+            [(ngModel)]="username"
+            placeholder="ชื่อผู้ใช้" 
+            required class="form-input" />
     </div>
 
     <div>
       <label class="form-label">อีเมล</label>
-      <input type="email" name="email" [(ngModel)]="email" required class="form-input" />
+      <input 
+          type="email" 
+          name="email" 
+          [(ngModel)]="email"
+          required
+          placeholder="อีเมลของคุณ" 
+          class="form-input" />
     </div>
 
     <div>
-      <label class="form-label">รหัสผ่าน (อย่างน้อย 8 ตัวอักษร)</label>
-      <input type="password" name="password" [(ngModel)]="password" required minlength="8" class="form-input" />
+      <label class="form-label">รหัสผ่าน</label>
+      <input 
+            type="password" 
+            name="password" 
+            [(ngModel)]="password"
+            required minlength="8"
+            placeholder="รหัสผ่านอย่างน้อย 8 ตัวอักษร" 
+            class="form-input" />
     </div>
 
     @if (errorMessage()) {

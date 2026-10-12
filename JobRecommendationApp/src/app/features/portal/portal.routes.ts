@@ -20,10 +20,10 @@ export const PORTAL_ROUTES: Routes = [
         path: 'jobs/:id',
         loadComponent: () => import('./jobs/job-detail/job-detail.component').then(c => c.JobDetailComponent)
       },
-      {
-        path: 'algorithm-demo',
-        loadComponent: () => import('./algorithm-demo/algorithm-demo.component').then(c => c.AlgorithmDemoComponent)
-      },
+      // {
+      //   path: 'algorithm-demo',
+      //   loadComponent: () => import('./algorithm-demo/algorithm-demo.component').then(c => c.AlgorithmDemoComponent)
+      // },
       {
         path: 'login',
         canActivate: [guestGuard],

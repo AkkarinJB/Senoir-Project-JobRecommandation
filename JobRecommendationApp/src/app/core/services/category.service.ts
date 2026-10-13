@@ -22,11 +22,11 @@ export class CategoryService {
     return this.http.post<{ message: string; categoryId: number }>(this.adminBaseUrl, { name });
   }
 
-  updateCategory(id: number, name: string): Observable<{ message: string }> {
+  updateCategory(id: string, name: string): Observable<{ message: string }> {
     return this.http.put<{ message: string }>(`${this.adminBaseUrl}/${id}`, { name });
   }
 
-  deleteCategory(id: number): Observable<{ message: string }> {
+  deleteCategory(id: string): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.adminBaseUrl}/${id}`);
   }
 }

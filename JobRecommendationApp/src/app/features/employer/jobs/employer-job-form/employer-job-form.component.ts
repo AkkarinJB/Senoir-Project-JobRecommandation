@@ -35,7 +35,7 @@ export class EmployerJobFormComponent extends FormPageBase {
     skillIds: [],
     offeredSalary: 0,
     location: '',
-    categoryId: null
+    categoryId: null as string | null
   };
 
   constructor() {
@@ -58,7 +58,7 @@ export class EmployerJobFormComponent extends FormPageBase {
             skillIds: job.requiredSkills.map((s) => s.id),
             offeredSalary: job.offeredSalary,
             location: job.location,
-            categoryId: job.categoryId
+            categoryId: job.categoryId != null ? String(job.categoryId) : null 
           };
           this.isLoading.set(false);
         },

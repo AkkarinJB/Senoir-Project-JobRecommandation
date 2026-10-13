@@ -107,14 +107,20 @@ namespace JobRecommendationApi.Controllers.Admin
                 return BadRequest("มีหมวดหมู่นี้อยู่แล้ว");
             }
 
-            var category = new JobCategory { Name = request.Name };
+            string newRowKey = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+
+            var category = new JobCategory
+            {
+                Id = newRowKey,
+                Name = request.Name
+            };
             _context.JobCategories.Add(category);
             _context.SaveChanges();
 
             return Ok(new { message = "เพิ่มหมวดหมู่สำเร็จ", categoryId = category.Id });
         }
 
-        [HttpPut("categories/{id}")]
+        [HttpPut("categories/{**id}")]
         public IActionResult UpdateCategory(string id, JobCategoryDto request)
         {
             var category = _context.JobCategories.FirstOrDefault(c => c.Id == id);
@@ -126,7 +132,7 @@ namespace JobRecommendationApi.Controllers.Admin
             return Ok(new { message = "แก้ไขหมวดหมู่สำเร็จ" });
         }
 
-        [HttpDelete("categories/{id}")]
+        [HttpDelete("categories/{**id}")]
         public IActionResult DeleteCategory(string id)
         {
             var category = _context.JobCategories.FirstOrDefault(c => c.Id == id);

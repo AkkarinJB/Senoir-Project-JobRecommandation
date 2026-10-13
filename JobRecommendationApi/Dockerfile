@@ -6,7 +6,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:8.0 as build
 WORKDIR /src
 COPY ["JobRecommendationApi.csproj", "./"]
-RUN dotnet restore "JobRecommendation.csproj"
+RUN dotnet restore "JobRecommendationApi.csproj"
 COPY . . 
 RUN dotnet build "JobRecommendationApi.csproj" -c Release -o /app/build
 

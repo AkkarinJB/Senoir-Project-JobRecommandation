@@ -22,5 +22,5 @@ export interface JobPostPayload {
   skillIds: number[];
   offeredSalary: number;
   location: string;
-  categoryId: number | null;
+  categoryId: string | null;
 }

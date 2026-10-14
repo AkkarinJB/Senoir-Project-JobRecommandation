@@ -1,0 +1,82 @@
+name: SonarQube analysis
+
+on:
+  push:
+    branches: ["main", "audit"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  Analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Verify project files
+        run: |
+          test -f JobRecommendationApi/JobRecommendationApi.csproj
+          test -f JobRecommendationApp/package.json
+
+      - name: Install SonarScanner
+        run: |
+          dotnet tool install --global dotnet-sonarscanner
+          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+
+      - name: Validate SonarQube secrets
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          test -n "$SONAR_TOKEN" || {
+            echo "SONAR_TOKEN is missing"
+            exit 1
+          }
+
+      - name: Install frontend dependencies
+        working-directory: JobRecommendationApp
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: JobRecommendationApp
+        run: npm run build
+
+      - name: Begin SonarQube Analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          dotnet sonarscanner begin \
+            /k:"akkarinjb_Senoir-Project-Jobrecommandation" \
+            /o:"akkarinjb" \
+            /d:sonar.token="$SONAR_TOKEN" \
+            /d:sonar.scanner.scanAll=true \
+            /d:sonar.exclusions="**/node_modules/**,**/dist/**,**/coverage/**"
+
+      - name: Build backend
+        run: |
+          dotnet build JobRecommendationApi/JobRecommendationApi.csproj \
+            --no-incremental
+
+      - name: End SonarQube Analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          dotnet sonarscanner end \
+            /d:sonar.token="$SONAR_TOKEN"

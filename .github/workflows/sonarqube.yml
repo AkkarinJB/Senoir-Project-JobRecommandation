@@ -1,4 +1,5 @@
 name: SonarQube analysis
+
 on:
   push:
     branches: ["main", "audit"]
@@ -25,8 +26,15 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
-      - name: Verify .NET SDK
-        run: dotnet --info
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Verify project files
+        run: |
+          test -f JobRecommendationApi/JobRecommendationApi.csproj
+          test -f JobRecommendationApp/package.json
 
       - name: Install SonarScanner
         run: |
@@ -36,30 +44,35 @@ jobs:
       - name: Validate SonarQube secrets
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
           test -n "$SONAR_TOKEN" || {
             echo "SONAR_TOKEN is missing"
             exit 1
           }
-          test -n "$SONAR_HOST_URL" || {
-            echo "SONAR_HOST_URL is missing"
-            exit 1
-          }
+
+      - name: Install frontend dependencies
+        working-directory: JobRecommendationApp
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: JobRecommendationApp
+        run: npm run build
 
       - name: Begin SonarQube Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
           dotnet sonarscanner begin \
             /k:"akkarinjb_Senoir-Project-Jobrecommandation" \
-            /d:sonar.host.url="$SONAR_HOST_URL" \
             /o:"akkarinjb" \
-            /d:sonar.token="$SONAR_TOKEN"
+            /d:sonar.token="$SONAR_TOKEN" \
+            /d:sonar.scanner.scanAll=true \
+            /d:sonar.exclusions="**/node_modules/**,**/dist/**,**/coverage/**"
 
-      - name: Build project
-        run: dotnet build --no-incremental
+      - name: Build backend
+        run: |
+          dotnet build JobRecommendationApi/JobRecommendationApi.csproj \
+            --no-incremental
 
       - name: End SonarQube Analysis
         env:

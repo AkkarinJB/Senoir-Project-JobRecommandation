@@ -13,7 +13,13 @@ export interface CategoryFormDialogData {
 @Component({
   selector: 'app-category-form-dialog',
   standalone: true,
-  imports: [FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  imports: [
+    FormsModule, 
+    MatDialogModule, 
+    MatFormFieldModule, 
+    MatInputModule, 
+    MatButtonModule
+  ],
   templateUrl: './category-form-dialog.component.html'
 })
 export class CategoryFormDialogComponent {

@@ -1,13 +1,15 @@
+
 name: SonarQube analysis
 
 on:
   push:
-    branches: [ "main", "audit" ]
+    branches: ["main", "audit"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
+  contents: read
   pull-requests: read
 
 jobs:
@@ -15,25 +17,54 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - name: Set up .NET Core
+      - name: Set up .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: "8.0.x"
 
-      - name: Install SonarScanner for .NET
+      - name: Verify .NET SDK
+        run: dotnet --info
+
+      - name: Install SonarScanner
         run: |
           dotnet tool install --global dotnet-sonarscanner
+          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
 
-      - name: Run SonarQube Analysis
+      - name: Validate SonarQube secrets
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          test -n "$SONAR_TOKEN" || {
+            echo "SONAR_TOKEN is missing"
+            exit 1
+          }
+          test -n "$SONAR_HOST_URL" || {
+            echo "SONAR_HOST_URL is missing"
+            exit 1
+          }
+
+      - name: Begin SonarQube Analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          dotnet sonarscanner begin \
+            /k:"akkarinjb_Senoir-Project-Jobrecommandation" \
+            /d:sonar.host.url="$SONAR_HOST_URL" \
+            /d:sonar.token="$SONAR_TOKEN"
+
+      - name: Build project
+        run: dotnet build --no-incremental
+
+      - name: End SonarQube Analysis
+        env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          dotnet tool update --global dotnet-sonarscanner
-          dotnet-sonarscanner begin /k:"akkarinjb_Senoir-Project-Jobrecommandation" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-          dotnet build
-          dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          dotnet sonarscanner end \
+            /d:sonar.token="$SONAR_TOKEN"

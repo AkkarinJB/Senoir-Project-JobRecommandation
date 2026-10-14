@@ -55,7 +55,7 @@ jobs:
           dotnet sonarscanner begin \
             /k:"akkarinjb_Senoir-Project-Jobrecommandation" \
             /d:sonar.host.url="$SONAR_HOST_URL" \
-            /o:"https://sonarcloud.io/organizations/akkarinjb" \
+            /o:"akkarinjb" \
             /d:sonar.token="$SONAR_TOKEN"
 
       - name: Build project

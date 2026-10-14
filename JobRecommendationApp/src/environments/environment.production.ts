@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.udonthani.link/api'
+  apiUrl: 'https://senoir-project-jobrecommandation.onrender.com/api'
 };

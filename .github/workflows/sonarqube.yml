@@ -2,9 +2,12 @@ name: SonarQube analysis
 
 on:
   push:
-    branches: ["main", "audit"]
+    branches: 
+     - master
+     - audit
   pull_request:
-    branches: ["main"]
+    branches: 
+    - master
   workflow_dispatch:
 
 permissions:

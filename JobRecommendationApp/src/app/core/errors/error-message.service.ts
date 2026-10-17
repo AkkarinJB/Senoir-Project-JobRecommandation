@@ -53,9 +53,9 @@ export class ErrorMessageService {
         code:string | undefined,
     ) :string | undefined {
        const messages: Record<string, string> = {
-        INVALID_CREDENTALS: 
+        INVALID_CREDENTIALS:
             ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS,
-        OB_ALREADY_APPLIED:
+        JOB_ALREADY_APPLIED:
             ERROR_MESSAGES.JOB.ALREADY_APPLIED,
        };
 

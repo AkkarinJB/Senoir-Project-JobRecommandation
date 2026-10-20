@@ -1,8 +1,8 @@
 # JobRecommendation Project Overview 
 About This Project Technology Use
-- Angular (Frontend)
-- Asp.Net (Backend)
-- MySQL (Database)
+- Angular 
+- Asp.Net
+- MySQL 
 
 
 ## Algorithm Use

@@ -96,6 +96,9 @@ export class AdminCategoriesComponent {
     this.categoryService.deleteCategory(category.id).subscribe({
       next: () => {
         this.categories.update((list) => list.filter((c) => c.id !== category.id));
+         if(this.selectedCategory?.id === category.id){
+          this.selectedCategory = null;
+         }
         this.snackBar.open('ลบหมวดหมู่สำเร็จ', 'ปิด', { duration: 2500 });
       },
       error: () => this.snackBar.open('ลบหมวดหมู่ไม่สำเร็จ', 'ปิด', { duration: 3000 })

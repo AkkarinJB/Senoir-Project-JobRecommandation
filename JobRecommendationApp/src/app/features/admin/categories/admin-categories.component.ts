@@ -12,7 +12,13 @@ import { CategoryFormDialogComponent } from './category-form-dialog/category-for
 @Component({
   selector: 'app-admin-categories',
   standalone: true,
-  imports: [MatTableModule, MatButtonModule, MatIconModule, MatDialogModule, MatProgressSpinnerModule],
+  imports: [
+    MatTableModule, 
+    MatButtonModule, 
+    MatIconModule, 
+    MatDialogModule, 
+    MatProgressSpinnerModule
+  ],
   templateUrl: './admin-categories.component.html'
 })
 export class AdminCategoriesComponent {
@@ -20,26 +26,37 @@ export class AdminCategoriesComponent {
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
 
-  displayedColumns = ['name', 'actions'];
+  selectedCategory: JobCategory | null = null;
+
+  displayedColumns = ['name'];
   isLoading = signal(true);
   categories = signal<JobCategory[]>([]);
 
   constructor() {
-    this.load();
+    this.loadCategory();
   }
 
-  private load() {
+  private loadCategory() {
     this.isLoading.set(true);
     this.categoryService.getCategories().subscribe({
       next: (categories) => {
         this.categories.set(categories);
         this.isLoading.set(false);
+        this.selectedCategory = null;
       },
       error: () => {
         this.isLoading.set(false);
         this.snackBar.open('โหลดหมวดหมู่ไม่สำเร็จ', 'ปิด', { duration: 3000 });
       }
     });
+  }
+
+  selectCategory(category: JobCategory){
+    if(this.selectedCategory?.id === category.id) {
+      this.selectedCategory = null;
+    } else {
+      this.selectedCategory = category;
+    }
   }
 
   openCreateDialog() {
@@ -66,7 +83,7 @@ export class AdminCategoriesComponent {
       request.subscribe({
         next: () => {
           this.snackBar.open(category ? 'แก้ไขหมวดหมู่สำเร็จ' : 'เพิ่มหมวดหมู่สำเร็จ', 'ปิด', { duration: 2500 });
-          this.load();
+          this.loadCategory();
         },
         error: () => this.snackBar.open('บันทึกไม่สำเร็จ (อาจมีชื่อนี้อยู่แล้ว)', 'ปิด', { duration: 3000 })
       });
@@ -79,6 +96,9 @@ export class AdminCategoriesComponent {
     this.categoryService.deleteCategory(category.id).subscribe({
       next: () => {
         this.categories.update((list) => list.filter((c) => c.id !== category.id));
+         if(this.selectedCategory?.id === category.id){
+          this.selectedCategory = null;
+         }
         this.snackBar.open('ลบหมวดหมู่สำเร็จ', 'ปิด', { duration: 2500 });
       },
       error: () => this.snackBar.open('ลบหมวดหมู่ไม่สำเร็จ', 'ปิด', { duration: 3000 })

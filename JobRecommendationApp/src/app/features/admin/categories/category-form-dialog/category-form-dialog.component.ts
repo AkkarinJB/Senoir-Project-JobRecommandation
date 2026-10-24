@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { JobCategory } from '../../../../core/models/category.model';
 
 export interface CategoryFormDialogData {
-  category: JobCategory | null; // null = โหมดเพิ่มใหม่, มีค่า = โหมดแก้ไข
+  category: JobCategory | null;
 }
 
 @Component({
@@ -22,6 +22,7 @@ export interface CategoryFormDialogData {
   ],
   templateUrl: './category-form-dialog.component.html'
 })
+
 export class CategoryFormDialogComponent {
   dialogRef = inject(MatDialogRef<CategoryFormDialogComponent>);
   data = inject<CategoryFormDialogData>(MAT_DIALOG_DATA);

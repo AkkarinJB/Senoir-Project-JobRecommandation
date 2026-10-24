@@ -1,8 +1,8 @@
-<h2 mat-dialog-title>{{ data.category ? 'แก้ไขหมวดหมู่' : 'เพิ่มหมวดหมู่ใหม่' }}</h2>
+<h2 mat-dialog-title>{{ data.category ? 'แก้ไขหมวดหมู่' : 'เพิ่มหมวดหมู่งาน' }}</h2>
 <form (ngSubmit)="save()">
   <mat-dialog-content>
+     <p>เพิ่มหมวดหมู่งานใหม่ : <span class="text-red-600">*</span></p>
     <mat-form-field appearance="outline" class="w-full">
-      <mat-label>ชื่อหมวดหมู่</mat-label>
       <input matInput name="name" [(ngModel)]="name" required cdkFocusInitial />
     </mat-form-field>
   </mat-dialog-content>
